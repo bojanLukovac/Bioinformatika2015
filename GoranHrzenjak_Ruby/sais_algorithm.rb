@@ -25,20 +25,13 @@ class SAIS
     # p_1 array
     lms_pointers = determine_LMS_substring_pointers(t_array, bucket_pointers,
                                                   suffix_array, input_string)
-    puts bucket_pointers.to_s
-    puts suffix_array.to_s
-    
-    puts "***"
+    #puts bucket_pointers.to_s
+    #puts suffix_array.to_s
+ 
     
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
-    puts "***"
-    puts bucket_pointers.to_s
-    puts suffix_array.to_s
-    
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
-    puts "***"
-    puts bucket_pointers.to_s
-    puts suffix_array.to_s
+
     
   end
   
@@ -150,8 +143,9 @@ class SAIS
     suffix_array.each_with_index do |value, index|
       if value > 0
         if (t_array[value-1] == 0)
-          # if type is L, add SA[i]-1 to the beggining of appropriate bucket
-          # shift bucket pointer right
+          
+          # if the type is L, add SA[i]-1 to the BEGGINING of appropriate bucket
+          # shift bucket pointer RIGHT
           char_value = input_string[value-1]
           pointer = bucket_pointers[char_value]
           bucket_pointers[char_value] += 1
@@ -171,21 +165,23 @@ class SAIS
     # set bucket pointers to the LAST element of each bucket
     bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
 
+    puts bucket_pointers.to_s
+
     # foreach SA[i] > 0 check type
+    # this time, check SA from the end to the beggining
     suffix_array.to_enum.with_index.reverse_each do |value, index|
       if value > 0
-        puts "i: #{index}"
-        #if (t_array[value-1] == 0)
-        #  puts "L value"
-        #   if type is L, add SA[i]-1 on the beggining of appropriate bucket
-        #   shift bucket pointer right
-        #  char_value = input_string[value-1]
-        #  pointer = bucket_pointers[char_value]
-        #  bucket_pointers[char_value] += 1
-        #  suffix_array[pointer] = value-1
-        #  
-        #  puts suffix_array.to_s
-        #end
+        if (t_array[value-1] == 1)
+
+          # if the type is S, add SA[i]-1 on the END of appropriate bucket
+          # shift bucket pointer LEFT
+          char_value = input_string[value-1]
+          pointer = bucket_pointers[char_value]
+          bucket_pointers[char_value] -= 1
+          suffix_array[pointer] = value-1
+          
+          #puts suffix_array.to_s
+        end
       end
     end  
     
