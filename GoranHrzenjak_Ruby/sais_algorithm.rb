@@ -32,6 +32,17 @@ class SAIS
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
 
+    unique_chars, shortened_string_s1 =
+      name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
+      
+    if (unique_chars)
+      puts "Directly computing SA1 from S1"
+    else
+      puts "recursion"
+    end
+    
+    #induce SA from SA1
+    
     
   end
   
@@ -185,6 +196,73 @@ class SAIS
       end
     end  
     
+  end
+  
+  
+  def name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
+    
+    # True only if each character in S_1 is unique
+    each_char_unique = true
+    
+    # S_1
+    shortened_string = Array.new(lms_pointers.size, -1)
+    
+    names_count = 0
+    previous_substring_index = -1
+    suffix_array.each_with_index do |value, index|
+      substring_index = lms_pointers.index(value)
+      unless substring_index.nil?
+        puts "#{value} + idx: #{substring_index}"
+        
+        if (index == 0)
+          shortened_string[substring_index] = names_count
+          previous_substring_index = substring_index
+          
+        else
+          # Are LMS substrings equal?
+
+          if substring_index == lms_pointers.size - 1
+            current_substring = input_string[value]
+            current_substring_type = t_array[value]
+          else
+            current_substring = input_string[value..lms_pointers[substring_index + 1]]
+            current_substring_type = t_array[value..lms_pointers[substring_index + 1]]
+          end
+          
+          if previous_substring_index == lms_pointers.size - 1
+            previous_substring = input_string[lms_pointers[previous_substring_index]]
+            previous_substring_type = t_array[lms_pointers[previous_substring_index]]
+          else
+            previous_substring = input_string[lms_pointers[previous_substring_index]..
+                                              lms_pointers[previous_substring_index + 1]]
+            previous_substring_type = t_array[lms_pointers[previous_substring_index]..
+                                              lms_pointers[previous_substring_index + 1]]
+          end
+          
+
+          # Check lenght, compare all characters and
+          # type of every character
+          if (current_substring.size == previous_substring.size &&
+              current_substring.eql?(previous_substring) &&
+              current_substring_type.eql?(previous_substring_type))
+            
+            each_char_unique = false
+          else
+            # NOT equal LMS substrings
+            names_count += 1
+          end
+
+          shortened_string[substring_index] = names_count
+          previous_substring_index = substring_index
+          
+        end
+        
+      end
+      
+    end
+    
+    puts shortened_string.to_s
+    return each_char_unique, shortened_string
   end
   
   
