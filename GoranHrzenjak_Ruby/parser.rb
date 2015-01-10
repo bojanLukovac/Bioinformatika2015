@@ -73,6 +73,7 @@ class Parser
     if @input_file_format == 0
       puts "Reading regular string"
       input_strings << input_data_file.gets
+
       
     elsif @input_file_format == 1
       puts "Reading FASTA format"
@@ -93,7 +94,7 @@ class Parser
       puts "Unknown input file format: #{@input_file_format}"
       exit
     end
-    
+
     return input_strings
   end
   

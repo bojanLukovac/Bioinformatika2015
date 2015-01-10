@@ -1,72 +1,72 @@
 #!/usr/bin/env ruby
 
+class Time
+  def to_milliseconds
+    (self.to_f * 1000.0).to_i
+  end
+end
+
 class SAIS
-  
-  
   
   def initialize(input_string)
     @original_input_string = input_string
-    
   end
+  
   
   def calculate_suffix_array
     @output_suffix_array = main_sais(@original_input_string)
   end
   
+  def get_output_SA
+    return @output_suffix_array
+  end
+  
+  
   def main_sais(input_string)
-    puts "\n -----------------------------------------\n\n"
+    
+    timeNow = Time.now
+    puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
     
     t_array = classify_type_of_chars(input_string)
-    puts "\nT:"
-    puts t_array.to_s
+    
+    timeNow = Time.now
+    puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+    
+    
+    timeNow = Time.now
+    puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
     
     bucket_pointers = determine_buckets(input_string, true)
-    puts "\nB:"
-    puts bucket_pointers.to_s
-    
+
     # new suffix array
     suffix_array = initialize_suffix_array(input_string.size)
-    puts "\nSA:"
-    puts suffix_array.to_s
+    timeNow = Time.now
+    puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
     
     # p_1 array
     lms_pointers = determine_LMS_substring_pointers(t_array, bucket_pointers,
                                                   suffix_array, input_string)
-    puts "\nB:"
-    puts bucket_pointers.to_s
-    puts "\nSA:"
-    puts suffix_array.to_s
-    puts "***"
- 
+    puts "3 #{Time.now}"
     
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
+    puts "4 #{Time.now}"
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+    puts "5 #{Time.now}"
 
     unique_chars, shortened_string_s1 =
-      name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
-      
+      name_LMS_substring2(lms_pointers, suffix_array, t_array, input_string)
+    puts "6 #{Time.now}"  
     if (unique_chars)
-      puts "Directly computing SA1 from S1: #{shortened_string_s1}"
-      
       suffix_array_short = directly_compute_shortened_SA(shortened_string_s1)
-
     else
-      puts "recursion"
       suffix_array_short = main_sais(shortened_string_s1)
-      
-      puts "recursion ended!!!"
     end
-    
-    puts "\nSA1:"
-    puts suffix_array_short.to_s
-    
-
+    puts "7 #{Time.now}"
     #induce SA from SA1
     induce_final_suffix_array(t_array, bucket_pointers, suffix_array, input_string,
                           suffix_array_short, lms_pointers)
-    puts "\nSA calculated:"
-    puts suffix_array.to_s
-    
+
+    puts "8 #{Time.now}"
     return suffix_array
   
   end
@@ -100,7 +100,7 @@ class SAIS
     t_array.reverse!
     return t_array
   end
-  
+
   
   def determine_buckets(input_string_array, set_to_end, *old_buckets)
     
@@ -171,27 +171,34 @@ class SAIS
   
   def induce_SA_L(t_array, bucket_pointers,
                   suffix_array, input_string)
+    start = Time.now
     # (2nd step of induced sort algorithm )
     # set bucket pointers to the FIRST element of each bucket
     bucket_pointers = determine_buckets(input_string, false, bucket_pointers)
 
     # foreach SA[i] > 0 check type
-    suffix_array.each_with_index do |value, index|
-      if value > 0
-        if (t_array[value-1] == 0)
-          
+    suffix_array.each_with_index do |val, index|
+      new_value = suffix_array[-(index + 1)]
+      if new_value > 0
+        if (t_array[new_value - 1] == 0)
           # if the type is L, add SA[i]-1 to the BEGGINING of appropriate bucket
           # shift bucket pointer RIGHT
-          char_value = input_string[value-1]
+          char_value = input_string[new_value - 1]
           pointer = bucket_pointers[char_value]
           bucket_pointers[char_value] += 1
-          suffix_array[pointer] = value-1
+          suffix_array[pointer] = new_value - 1
           
-          puts suffix_array.to_s
+          #puts suffix_array.to_s
         end
       end
-    end  
-    puts bucket_pointers.to_s
+    end
+    #puts bucket_pointers.to_s
+    
+    stop = Time.now
+    time_elapsed = (start - stop) * 1000
+    puts "induce_SA: #{time_elapsed} ms\n\n"
+
+    
   end
   
   
@@ -201,26 +208,28 @@ class SAIS
     # set bucket pointers to the LAST element of each bucket
     bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
 
-    
 
     # foreach SA[i] > 0 check type
     # this time, check SA from the end to the beggining
-    suffix_array.to_enum.with_index.reverse_each do |value, index|
-      if value > 0
-        if (t_array[value-1] == 1)
+    suffix_array.reverse.each_with_index do |val, index|
+
+      new_value = suffix_array[-(index + 1)]
+      if new_value > 0
+        
+        if (t_array[new_value - 1] == 1)
 
           # if the type is S, add SA[i]-1 on the END of appropriate bucket
           # shift bucket pointer LEFT
-          char_value = input_string[value-1]
+          char_value = input_string[new_value - 1]
           pointer = bucket_pointers[char_value]
           bucket_pointers[char_value] -= 1
-          suffix_array[pointer] = value-1
+          suffix_array[pointer] = new_value - 1
           
-          puts suffix_array.to_s
+          #puts suffix_array.to_s
         end
       end
     end  
-    puts bucket_pointers.to_s
+    #puts bucket_pointers.to_s
   end
   
   
@@ -234,11 +243,13 @@ class SAIS
     
     names_count = 0
     previous_substring_index = -1
+    puts "5. #{Time.now}"
     suffix_array.each_with_index do |value, index|
+      tstart = Time.now
+      
       substring_index = lms_pointers.index(value)
       unless substring_index.nil?
-        puts "#{value} + idx: #{substring_index}"
-        
+
         if (index == 0)
           shortened_string[substring_index] = names_count
           previous_substring_index = substring_index
@@ -269,8 +280,7 @@ class SAIS
           # type of every character
           if (current_substring.size == previous_substring.size &&
               current_substring.eql?(previous_substring) &&
-              current_substring_type.eql?(previous_substring_type))
-            
+             current_substring_type.eql?(previous_substring_type))
             each_char_unique = false
           else
             # NOT equal LMS substrings
@@ -283,14 +293,14 @@ class SAIS
         end
         
       end
-      
+      tstop = Time.now
+      print ": #{(tstop-tstart)*1000} ms "
     end
-    
-    puts shortened_string.to_s
+    puts "5.. #{Time.now}"
     return each_char_unique, shortened_string
   end
   
-  
+
   def directly_compute_shortened_SA(shortened_string)
     suffix_array_short = Array.new(shortened_string.size, -1)
     shortened_string.each_with_index do |value, index|
@@ -300,38 +310,26 @@ class SAIS
   end
   
   
+  
   def induce_final_suffix_array(t_array, bucket_pointers, suffix_array,
                    input_string, suffix_array_short, lms_pointers)
     #puts "Induce SA from SA1"
     suffix_array.map! {|x| x = -1}
-    #puts suffix_array.to_s
+
+
     bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
-    #puts bucket_pointers.to_s
-    
-    # 
+    print "."
     suffix_array_short.to_enum.with_index.reverse_each do |value, index|
       char_position = lms_pointers[suffix_array_short[index]]
-      #puts "char position: #{char_position}"
-      
-      #puts "string [position] = #{input_string[char_position]}"
-      
+
       pointer = bucket_pointers[input_string[char_position]]
       bucket_pointers[input_string[char_position]] -= 1
       suffix_array[pointer] = char_position
  
     end
-    
-    
-    #puts suffix_array.to_s
-    #puts bucket_pointers.to_s
-    #puts "---"
+
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
-    #puts "---"
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
-    
-    
-    puts "Over with inducing"
-    
     
   end
   

@@ -1,6 +1,2 @@
-# Bioinformatika2015
-## Goran Hrženjak
-## Ruby
-==================
-
-###SA_IS algorithm
+###Goran Hrženjak
+####Ruby
