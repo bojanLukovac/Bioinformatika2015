@@ -13,7 +13,12 @@ class SAIS
     puts "\n............................"
     puts "........CALCULATING........."
     puts "............................\n"
+    
     @output_suffix_array = main_sais(@original_input_string)
+    
+    puts "\n............................"
+    puts "...........OVER............."
+    puts "............................\n\n"
   end
   
   def get_output_SA
@@ -24,75 +29,79 @@ class SAIS
   def main_sais(input_string)
     
     puts "\n\n ---- MAIN SAIS CALL ----\n"
-    #timeNow = Time.now
-    #puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+    puts "#{input_string.size} chars"
+    print_time("Start!")
+    
   
     
     t_array = classify_type_of_chars(input_string)
-    print "T: "
-    puts t_array.to_s
+    #print "T: "
+    #puts t_array.to_s
     
-    #timeNow = Time.now
-    #puts " after classyfying LS type " + timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+
     
     
     bucket_pointers = determine_buckets(input_string, true)
-    print "B: "
-    puts bucket_pointers.to_s
-    #timeNow = Time.now
-    #puts " after determining bucs " + timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+    #print "B: "
+    #puts bucket_pointers.to_s
     
+    print_time("After determining buckets")
 
     # new suffix array
     suffix_array = initialize_suffix_array(input_string.size)
-    #timeNow = Time.now
-    #puts timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+    
     
     # p_1 array
     lms_pointers = determine_LMS_substring_pointers(t_array, bucket_pointers,
                                                   suffix_array, input_string)
-    print "P1: "
-    puts lms_pointers.to_s
-    print "SA after 1st step: "
-    puts suffix_array.to_s
+    #print "P1: "
+    #puts lms_pointers.to_s
+    #print "SA after 1st step: "
+    #puts suffix_array.to_s
     
-    #timeNow = Time.now
-    #puts " after determining P1 " + timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
     
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
-    print "SA (after induceSA_L): "
-    puts suffix_array.to_s
-    #timeNow = Time.now
-    #puts " after SA L " + timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
-    induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
-    print "SA (after induceSA_S): "
-    puts suffix_array.to_s
-    #timeNow = Time.now
-    #puts " after SA S " + timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
-
-    unique_chars, shortened_string_s1 =
-      name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
+    #print "SA (after induceSA_L): "
+    #puts suffix_array.to_s
     
-    print "S1: "
-    puts shortened_string_s1.to_s
+    print_time("After Induce SA_L")
+    
+    
+    induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+    #print "SA (after induceSA_S): "
+    #puts suffix_array.to_s
+    
+    print_time("After Induce SA_S")
+    
+    
+    unique_chars, shortened_string_s1 =
+      name_LMS_substring_t2(lms_pointers, suffix_array, t_array, input_string)
+    
+    print_time("After naming")
+    
+    #print "S1: "
+    #puts shortened_string_s1.to_s
     
     if (unique_chars)
-      puts "directly computing SA1 from SA1"
+      #puts "directly computing SA1 from SA1"
       suffix_array_short = directly_compute_shortened_SA(shortened_string_s1)
     else
-      puts "recursion"
+      #puts "recursion"
       suffix_array_short = main_sais(shortened_string_s1)
-      puts "returned from recursion"
+      #puts "returned from recursion"
     end
     
-    print "SA1: "
-    puts suffix_array_short.to_s
+    #print "SA1: "
+    #puts suffix_array_short.to_s
     
     #induce SA from SA1
-    puts "inducing sa from sa1..."
+    #puts "inducing sa from sa1..."
+
     induce_final_suffix_array(t_array, bucket_pointers, suffix_array, input_string,
                           suffix_array_short, lms_pointers)
-
+    
+    print_time("After final inducing!")
+    
     return suffix_array
   
   end
@@ -265,6 +274,8 @@ class SAIS
   end
   
   
+  
+  
   def name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
     
     # True only if each character in S_1 is unique
@@ -275,61 +286,71 @@ class SAIS
     
     names_count = 0
     previous_substring_index = -1
+    
 
-    suffix_array.each_with_index do |value, index|
-      
-      substring_index = lms_pointers.index(value)
+    puts "count of lms = #{lms_pointers.size}"
+
+    print ".."
+    lms_pointers_hash = Hash[lms_pointers.map.with_index.to_a]
+    print ".."
+    
+    n = suffix_array.size
+    
+    substring_index = lms_pointers.index(suffix_array[0])
+      unless substring_index.nil?
+        shortened_string[substring_index] = names_count
+        previous_substring_index = substring_index
+      end
+    
+    for idx in (2..(n-1))
+      value = suffix_array[idx]
+      ###substring_index = lms_pointers.index(value)
+      substring_index = lms_pointers_hash[value]
       unless substring_index.nil?
 
-        if (index == 0)
-          shortened_string[substring_index] = names_count
-          previous_substring_index = substring_index
-          
+        # Are LMS substrings equal?
+        
+        ##
+        if substring_index == lms_pointers.size - 1
+          current_substring = input_string[value]
+          current_substring_type = t_array[value]
         else
-          # Are LMS substrings equal?
-
-          if substring_index == lms_pointers.size - 1
-            current_substring = input_string[value]
-            current_substring_type = t_array[value]
-          else
-            current_substring = input_string[value..lms_pointers[substring_index + 1]]
-            current_substring_type = t_array[value..lms_pointers[substring_index + 1]]
-          end
-          
-          if previous_substring_index == lms_pointers.size - 1
-            previous_substring = input_string[lms_pointers[previous_substring_index]]
-            previous_substring_type = t_array[lms_pointers[previous_substring_index]]
-          else
-            previous_substring = input_string[lms_pointers[previous_substring_index]..
-                                              lms_pointers[previous_substring_index + 1]]
-            previous_substring_type = t_array[lms_pointers[previous_substring_index]..
-                                              lms_pointers[previous_substring_index + 1]]
-          end
-          
-
-          # Check lenght, compare all characters and
-          # type of every character
-          if (current_substring.size == previous_substring.size &&
-              current_substring.eql?(previous_substring) &&
-             current_substring_type.eql?(previous_substring_type))
-            each_char_unique = false
-          else
-            # NOT equal LMS substrings
-            names_count += 1
-          end
-
-          shortened_string[substring_index] = names_count
-          previous_substring_index = substring_index
-          
+          current_substring = input_string[value..lms_pointers[substring_index + 1]]
+          current_substring_type = t_array[value..lms_pointers[substring_index + 1]]
         end
         
-      end
+        if previous_substring_index == lms_pointers.size - 1
+          previous_substring = input_string[lms_pointers[previous_substring_index]]
+          previous_substring_type = t_array[lms_pointers[previous_substring_index]]
+        else
+          previous_substring = input_string[lms_pointers[previous_substring_index]..
+                                            lms_pointers[previous_substring_index + 1]]
+          previous_substring_type = t_array[lms_pointers[previous_substring_index]..
+                                            lms_pointers[previous_substring_index + 1]]
+        end
+        
+        
+        # Check lenght, compare all characters and
+        # type of every character
+        if (current_substring.size == previous_substring.size &&
+            current_substring.eql?(previous_substring) &&
+           current_substring_type.eql?(previous_substring_type))
+          each_char_unique = false
+        else
+          # NOT equal LMS substrings
+          names_count += 1
+        end
+        
+        shortened_string[substring_index] = names_count
+        previous_substring_index = substring_index
 
+      end
     end
+    
+
 
     return each_char_unique, shortened_string
   end
-  
   
   
   def directly_compute_shortened_SA(shortened_string)
@@ -341,15 +362,14 @@ class SAIS
   end
   
   
+  
   def induce_final_suffix_array(t_array, bucket_pointers, suffix_array,
                    input_string, suffix_array_short, lms_pointers)
     #puts "Induce SA from SA1"
     suffix_array.map! {|x| x = -1}
 
-
     bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
-    print "."
-    
+
     suffix_array_short.to_enum.with_index.reverse_each do |value, index|
       char_position = lms_pointers[suffix_array_short[index]]
 
@@ -359,12 +379,10 @@ class SAIS
  
     end
     
-    puts "inducing - 1st step"
-    print "SA: "
-    puts suffix_array.to_s
-    
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
+
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+
     
   end
   
