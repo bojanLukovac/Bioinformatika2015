@@ -75,7 +75,7 @@ class SAIS
     
     
     unique_chars, shortened_string_s1 =
-      name_LMS_substring_t2(lms_pointers, suffix_array, t_array, input_string)
+      name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
     
     print_time("After naming")
     

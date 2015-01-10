@@ -3,7 +3,7 @@
 $LOAD_PATH << '.'
 require "sais_methods"
 require "parser"
-
+require "helpers"
 
 input_parser = Parser.new
 input_parser.parse_input_args
@@ -14,8 +14,8 @@ input_parser.get_input_strings.each do |input_string|
   
   #convert to ASCII values
 
-  
-  input_string_ASCII = input_string[0..1_000_000].unpack("c*")
+  #input_string_ASCII = input_string[0..1_000_000].unpack("c*")
+  input_string_ASCII = input_string[0..100_000].unpack("c*")
 
   sa_is = SAIS.new(input_string_ASCII)
 
@@ -25,7 +25,7 @@ input_parser.get_input_strings.each do |input_string|
   
   time_elapsed = (stop - start)*1_000
   
-  puts "Time to calculate suffix array: #{time_elapsed} ms"
+  puts "\nTime to calculate suffix array: #{time_elapsed} ms"
   
   string_out = sa_is.get_output_SA
   
@@ -33,6 +33,6 @@ input_parser.get_input_strings.each do |input_string|
   #  puts "#{string_out}"
   #end
   
-  puts "#{string_out}"
+  #puts "#{string_out}"
   
 end
