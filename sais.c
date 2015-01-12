@@ -131,7 +131,33 @@ LMSsub=0;
 //sentinel is defined as 0
 SA[SA[0]]=0;
 //compare LMS substrings  
-
+for(i=0;i<n1-1;i++){
+	c0=SA[i];
+	c1=SA[i+1];
+	flag=0;
+	 for(j=0;j<n;j++){
+	 	//check if one of the compared symbols is a sentinel
+	 	if((c0+j)==n-1||(c1+j)==n-1){
+	 		flag=1;
+	 		break;
+		 }
+		//check if symbols have different lexicographical value
+		//or they are of different type (S-type or L-type)
+		 else if((sign(c0+j)!=sign(c1+j))||(t[c0+j]!=t[c1+j])){
+		 	flag=1;
+		 	break;		 	
+		 }
+		 //check if one of the symbols is LMS
+		 else if(j>0){
+	 		if((t[c0+j]==1 && t[c0+j-1]==0)||(t[c1+j]==1 && t[c1+j-1]==0)) {
+			break;
+		  }
+	    }
+	 }
+	 if(flag) LMSsub++;
+	 SA[c1/2+n1]=LMSsub;
+	 }
+LMSsub++;
 
 s1 =(int*) malloc(sizeof(int)*n1);
 SA1 =(int*) malloc(sizeof(int)*n);
