@@ -51,6 +51,31 @@ for(i=0;i<n-2;i++){
 
 //induce sort SA
 void induceSA(unsigned char *str, int *SA, int *chr, int *b, int *t, int n, int m, int size){
+	int i,j,l,c;
+	countsymb(str,chr,n,m,size);
+	buckets(chr,b,m,0); 
+	for(i=0;i<n;i++){
+		j=SA[i];
+		if(j>0){
+			l=SA[i]-1;
+			if(l>=0 && t[l]==0){
+				c=sign(l);
+				SA[b[c]++]=l;
+			}	
+		}
+	}
+	countsymb(str,chr,n,m,size);
+	buckets(chr,b,m,1);
+	for(i=n-1;i>=0;i--){
+		j=SA[i];
+		if(j>0){
+			l=SA[i]-1;
+			if(l>=0 && t[l]==1){
+				c=sign(l);
+				SA[b[c]--]=l;
+			}
+		}
+	}
 }
 
 //sa-is algorithm
