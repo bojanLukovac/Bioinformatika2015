@@ -32,7 +32,21 @@ int i, sum;
 //define if a symbol is S-type or L-type
 //put 1 or 0 in array t if a symbol is S-type or L-type
 void symbset(unsigned char *str, int *t, int n, int size){
-
+int i,j,c0,c1;
+j=0;
+t[n-1]=1;
+t[n-2]=0;
+for(i=0;i<n-2;i++){
+	c0=sign(i);
+	c1=sign(i+1);
+	while (c0==c1){
+		j++;
+		c1=sign(i+1+j);
+	}
+	j=0;
+	if(c0>c1) t[i]=0;
+	 else t[i]=1;
+}
 }
 
 //induce sort SA
