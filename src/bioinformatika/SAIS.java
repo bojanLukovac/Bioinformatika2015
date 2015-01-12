@@ -2,6 +2,9 @@ package bioinformatika;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class SAIS {
 
@@ -20,6 +23,24 @@ public class SAIS {
 		System.out.println(getLMSPointersArray(S, t));
 		
 		
+		/*
+		 * Create SA buckets and insert -1 for each value
+		 * */
+		TreeMap<String, ArrayList<Integer>> bucketHash = new TreeMap<>();
+ 		for (int i = 0; i < S.length; i++) {
+ 			if (bucketHash.containsKey(S[i])) {
+ 				bucketHash.get(S[i]).add(-1);
+ 			} else {
+ 				ArrayList<Integer> values = new ArrayList<>();
+ 				values.add(-1);
+ 				bucketHash.put(S[i], values);
+ 			}
+		}
+ 		
+ 		Object[] keySet = bucketHash.keySet().toArray();
+ 		System.out.println(Arrays.toString(keySet));
+ 		
+ 		
 
 	}
 	
@@ -83,6 +104,16 @@ public class SAIS {
 			}
 		}
 		return lmsPointers;
+	}
+	
+	
+	/*
+	 * Class that's used for "bucket" part of the algorithm
+	 * */
+	public static class Bucket {
+		
+		
+		
 	}
  	
 }
