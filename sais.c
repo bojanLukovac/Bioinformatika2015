@@ -191,7 +191,41 @@ else {
 }
 
 //stage 3: induce the result for the original problem
+b = (int *)malloc(sizeof(int)*(m+1));
 
+//count the appearance of all the symbols,
+//find the end of every bucket and define all symbols as S-type or L-type
+countsymb(str,chr,n,m,size);
+buckets(chr,b,m,1);
+symbset(str,t,n,size);
+
+//put all LMS symbols in s1 (P1)
+j=0;
+for(i=0;i<n;i++)
+ if(t[i]==1 && t[i-1]==0){
+ 	s1[j]=i;
+ 	j++;
+ }
+
+//define SA1 as P1 
+for(i=0;i<n1;i++)
+ SA1[i]=s1[SA1[i]];
+
+//initialize the rest of SA as -1 
+for(i=n1;i<n;i++)
+ SA[i]=-1;
+
+//put symbols to the right place in SA
+for(i=n1-1; i>=0; i--){
+ j=SA[i];
+ SA[i]=-1;
+ c=sign(j);
+ SA[b[c]]=j;
+ b[c]--;
+}
+
+//make induced sort
+induceSA(str,SA,chr,b,t,n,m,size); 
 
 free(b); 
 free(t);
