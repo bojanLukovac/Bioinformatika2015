@@ -181,6 +181,14 @@ j--;
 SA1=SA;
 
 //stage 2: solve the reduced problem
+//if each symbol in s1 is not unique make a recursive call 
+if(LMSsub<n1)
+	sais((unsigned char*)s1,SA1,n1,LMSsub-1,sizeof(int));
+//or else directly compute SA1 from s1
+else {
+	for(i=0;i<n1;i++)
+	SA1[s1[i]]=i;
+}
 
 //stage 3: induce the result for the original problem
 
