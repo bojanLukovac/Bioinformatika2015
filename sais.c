@@ -4,13 +4,29 @@
 
 //count the appearance of every symbol in string
 void countsymb(unsigned char *str, int *chr, int n, int m, int size){
-
+int i, c;
+	for (i=0;i<m;i++)
+  	chr[i]=0;
+  for (i=0;i<n;i++){
+  	c=sign(i);
+  	chr[c]++;
+ }
 }
 
 //define beginning or end for every bucket
 //each type of symbol has its own bucket 
 void buckets(int *chr, int *b, int m, int end){
-
+int i, sum;
+	sum=0;
+	for(i=0;i<=m;i++) 
+		b[i]=0;
+	for (i=0;i<=m;i++){
+		sum+=chr[i];
+		if(end) 
+		 b[i]=sum-1;
+		else
+		 b[i]=sum-chr[i];
+	}
 }
 
 //define if a symbol is S-type or L-type
