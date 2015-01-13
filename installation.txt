@@ -1,0 +1,4 @@
+ - compile and run on biolinux from command line with following steps:
+	1. select path to directory
+	2. compile with -> 	gcc -o sais sais.c main.c
+	3. run with 	->	./sais "input file" "output file"
