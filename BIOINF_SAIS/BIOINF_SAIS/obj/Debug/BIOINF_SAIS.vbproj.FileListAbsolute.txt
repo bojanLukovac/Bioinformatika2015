@@ -1,0 +1,13 @@
+c:\users\iris\documents\visual studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\bin\Debug\BIOINF_SAIS.exe.config
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.Resources.resources
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.vbproj.GenerateResource.Cache
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\bin\Debug\BIOINF_SAIS.exe
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\bin\Debug\BIOINF_SAIS.pdb
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\bin\Debug\BIOINF_SAIS.xml
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.exe
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.xml
+C:\Users\Iris\Documents\Visual Studio 2013\Projects\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.pdb
+C:\Users\Celici\Downloads\BIOINF_SAIS\BIOINF_SAIS\BIOINF_SAIS\bin\Debug\BIOINF_SAIS.exe.config
+C:\Users\Celici\Downloads\BIOINF_SAIS\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.exe
+C:\Users\Celici\Downloads\BIOINF_SAIS\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.xml
+C:\Users\Celici\Downloads\BIOINF_SAIS\BIOINF_SAIS\BIOINF_SAIS\obj\Debug\BIOINF_SAIS.pdb
