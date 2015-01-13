@@ -96,16 +96,7 @@ public class SAIS {
  		setAllPointersInBucketsToEnd(keySet, bucketPointers, bucketHash);
  		
  		// Iterate from the end to the beginning
- 		for (int i = keySet.length - 1; i >= 0; i--) {
- 	        /*
- 	        for (Integer integerInBucket : entry.getValue()) {
- 	        	if (integerInBucket > 0 && t[integerInBucket - 1] == true) {
- 	        		bucketHash.get(S[integerInBucket - 1]).set(bucketPointers.get(S[integerInBucket - 1]), integerInBucket - 1);
- 	        		bucketPointers.put(S[integerInBucket - 1], bucketPointers.get(S[integerInBucket - 1]) + 1);		
- 	        	}
- 	        }
- 	        */
- 	        
+ 		for (int i = keySet.length - 1; i >= 0; i--) { 	        
  	        for (int j = bucketHash.get(keySet[i]).size() - 1; j >= 0; j--) {
  	        	int integerInBucket = bucketHash.get(keySet[i]).get(j);
 				if (integerInBucket > 0 && t[integerInBucket - 1] == false) {
@@ -113,7 +104,6 @@ public class SAIS {
 					bucketPointers.put(S[integerInBucket - 1], bucketPointers.get(S[integerInBucket - 1]) - 1);
 				}
 			}
- 	        
  	    }
 
  		System.out.println("_____Third iteration__________");
@@ -122,6 +112,81 @@ public class SAIS {
  	    }
  		
  		
+ 		// TEST
+ 		boolean result = compareLMSSubstrings(3, 7, S, t);
+ 		System.out.println(result);
+ 		
+ 		// STEP 4,  Give new names to each LMS substring
+ 		int[] S1 = new int[lmsPointersArray.size()];
+ 		ArrayList<Integer> SA = new ArrayList<>();
+ 	
+		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+			for (Integer integerInBucket : entry.getValue()) {
+				SA.add(integerInBucket);
+			}
+		}
+	
+		int newName = 0;
+		
+		int lastKnownIndexOfLMSSubstringInSA = 0;
+		for (int i = 0; i < SA.size(); i++) {
+			if (lmsPointersArray.contains(SA.get(i))) {
+				lastKnownIndexOfLMSSubstringInSA = i;
+				System.out.println(lastKnownIndexOfLMSSubstringInSA);
+				break;
+			}
+		}
+		S1[lastKnownIndexOfLMSSubstringInSA] = newName;
+		
+		for (int i = lastKnownIndexOfLMSSubstringInSA + 1; i < SA.size(); i++) {
+			if (lmsPointersArray.contains(SA.get(i)) == true) {
+				
+				if(compareLMSSubstrings(SA.get(i), SA.get(lastKnownIndexOfLMSSubstringInSA), S, t) == true) {
+					S1[lmsPointersArray.indexOf(SA.get(i))] = newName;
+				} else {
+					newName++;
+					S1[lmsPointersArray.indexOf(SA.get(i))] = newName;
+				}
+				lastKnownIndexOfLMSSubstringInSA = i;
+			} 
+		}
+
+		System.out.println(Arrays.toString(S1));
+		
+	}
+	
+	public static boolean compareLMSSubstrings(int firstLMS, int secondLMS, String[] S, boolean[] t) {
+		boolean isFirstIteration = true;
+		while (S[firstLMS].equals(S[secondLMS])) {
+
+			// Do only once
+			if (isFirstIteration == true) {
+				if (t[firstLMS] == false && t[secondLMS] == false) {
+					firstLMS++;
+					secondLMS++;
+					// Check if we're comparing last lms strings
+					if (firstLMS == secondLMS && firstLMS >= S.length) {
+						return true;
+					}
+					isFirstIteration = false;
+					continue;
+				}
+			}
+			
+			
+			if (t[firstLMS] == false && t[secondLMS] == false) {
+				return true;
+			} else if (t[firstLMS] == true && t[secondLMS] == true) {
+				firstLMS++;
+				secondLMS++;
+			} else {
+				return false;
+			}
+		
+		}
+		
+		return false;
+		
 	}
 	
 	public static void setAllPointersInBucketsToBeginning(Object[] keySet, HashMap<String, Integer> bucketPointers) {
