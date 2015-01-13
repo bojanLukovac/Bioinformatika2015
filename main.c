@@ -80,7 +80,7 @@ q=checkSort(str,SA+1,n-1);
 if(q==1) printf("SA is sorted correctly!");
 else printf("Problem with sorting!");
 
-for(i=1; i<n; i++)
+for(i=0; i<n; i++)
 	fprintf(dest, "%d ", SA[i]);
 		
 free(SA);
