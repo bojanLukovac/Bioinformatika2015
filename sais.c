@@ -52,6 +52,8 @@ for(i=0;i<n-2;i++){
 //induce sort SA
 void induceSA(unsigned char *str, int *SA, int *chr, int *b, int *t, int n, int m, int size){
 	int i,j,l,c;
+	//first sort L-type symbols (SA-L) 
+	//count the symbols and find the beginning of each bucket
 	countsymb(str,chr,n,m,size);
 	buckets(chr,b,m,0); 
 	for(i=0;i<n;i++){
@@ -64,6 +66,8 @@ void induceSA(unsigned char *str, int *SA, int *chr, int *b, int *t, int n, int 
 			}	
 		}
 	}
+	//then sort S-type symbols (SA-S) 
+	//count the symbols and find the end of each bucket
 	countsymb(str,chr,n,m,size);
 	buckets(chr,b,m,1);
 	for(i=n-1;i>=0;i--){
