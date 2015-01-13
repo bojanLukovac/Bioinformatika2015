@@ -11,7 +11,18 @@ public class SAIS {
 
 	public static void main(String[] args) {
 		
-		String input = "ATTAGCGAGCG$";
+		String firstSolution = doSAIS("ATTAGCGAGCG$");
+		String secondSolution = doSAIS(firstSolution);
+		
+		System.out.println("FIRST: " + firstSolution);
+		System.out.println("SECOND: " + secondSolution);
+		
+	}
+	
+	
+	public static String doSAIS(String inputString) {
+
+		String input = inputString;
 		
 		String[] S = input.split("(?!^)");
 		
@@ -113,8 +124,8 @@ public class SAIS {
  		
  		
  		// TEST
- 		boolean result = compareLMSSubstrings(3, 7, S, t);
- 		System.out.println(result);
+ 		// boolean result = compareLMSSubstrings(3, 7, S, t);
+ 		 //System.out.println(result);
  		
  		// STEP 4,  Give new names to each LMS substring
  		int[] S1 = new int[lmsPointersArray.size()];
@@ -153,6 +164,16 @@ public class SAIS {
 
 		System.out.println(Arrays.toString(S1));
 		
+		return joinArray(S1);
+	
+	}
+	
+	public static String joinArray(int[] aArr) {
+	    StringBuilder sbStr = new StringBuilder();
+	    for (int i = 0, il = aArr.length; i < il; i++) {
+	        sbStr.append(aArr[i]);
+	    }
+	    return sbStr.toString();
 	}
 	
 	public static boolean compareLMSSubstrings(int firstLMS, int secondLMS, String[] S, boolean[] t) {
