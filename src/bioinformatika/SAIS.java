@@ -3,7 +3,8 @@ package bioinformatika;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class SAIS {
@@ -19,8 +20,10 @@ public class SAIS {
 
 		boolean[] t = getT(S);
 		System.out.println(Arrays.toString(t));
+		
+		ArrayList<Integer> lmsPointersArray = getLMSPointersArray(S, t);
 			
-		System.out.println(getLMSPointersArray(S, t));
+		System.out.println(lmsPointersArray);
 		
 		
 		/*
@@ -36,12 +39,101 @@ public class SAIS {
  				bucketHash.put(S[i], values);
  			}
 		}
- 		
+
  		Object[] keySet = bucketHash.keySet().toArray();
  		System.out.println(Arrays.toString(keySet));
  		
+ 		/*
+ 		 *	HashMap that stores pointers on bucket arrays
+ 		 * 	For example, this is how it's done in powerpoint presentations: 
+ 		 * 	B['$'] = 0; B['A'] = 3; B['C'] = 5; B['G'] = 9; B['T'] = 11;
+ 		 *	We do the similar thing here :)
+ 		 * */
+ 		HashMap<String, Integer> bucketPointers = new HashMap<>();
+ 		setAllPointersInBucketsToEnd(keySet, bucketPointers, bucketHash);
  		
+ 		/*
+ 		 * Algorithm 1, first iteration
+ 		 * */
+ 		for (Integer lmsPointer : lmsPointersArray) {
+			String lms = S[lmsPointer];
+			bucketHash.get(lms).set(bucketPointers.get(lms), lmsPointer);
+			bucketPointers.put(lms, bucketPointers.get(lms) - 1);
+		}
+ 		
+ 		/*
+ 		 * Values after first iteration
+ 		 * */
+ 		System.out.println("____First iteration set LMS indexes__________");
+ 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+ 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
+ 	    }
+ 		
+ 		/*
+ 		 * Algorithm 2, second iteration
+ 		 * */
+ 		//Set all pointers in buckets to beginning
+ 		setAllPointersInBucketsToBeginning(keySet, bucketPointers);
+ 		
+ 		// Iterate over all buckets
+ 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+ 	        for (Integer integerInBucket : entry.getValue()) {
+ 	        	if (integerInBucket > 0 && t[integerInBucket - 1] == true) {
+ 	        		bucketHash.get(S[integerInBucket - 1]).set(bucketPointers.get(S[integerInBucket - 1]), integerInBucket - 1);
+ 	        		bucketPointers.put(S[integerInBucket - 1], bucketPointers.get(S[integerInBucket - 1]) + 1);		
+ 	        	}
+ 	        }
+ 	    }
 
+ 		System.out.println("____Second iteration______");
+ 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+ 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
+ 	    }
+ 		
+ 		/*
+ 		 * Algorithm 3, third iteration
+ 		 * */
+ 		setAllPointersInBucketsToEnd(keySet, bucketPointers, bucketHash);
+ 		
+ 		// Iterate from the end to the beginning
+ 		for (int i = keySet.length - 1; i >= 0; i--) {
+ 	        /*
+ 	        for (Integer integerInBucket : entry.getValue()) {
+ 	        	if (integerInBucket > 0 && t[integerInBucket - 1] == true) {
+ 	        		bucketHash.get(S[integerInBucket - 1]).set(bucketPointers.get(S[integerInBucket - 1]), integerInBucket - 1);
+ 	        		bucketPointers.put(S[integerInBucket - 1], bucketPointers.get(S[integerInBucket - 1]) + 1);		
+ 	        	}
+ 	        }
+ 	        */
+ 	        
+ 	        for (int j = bucketHash.get(keySet[i]).size() - 1; j >= 0; j--) {
+ 	        	int integerInBucket = bucketHash.get(keySet[i]).get(j);
+				if (integerInBucket > 0 && t[integerInBucket - 1] == false) {
+					bucketHash.get(S[integerInBucket - 1]).set(bucketPointers.get(S[integerInBucket - 1]), integerInBucket - 1);
+					bucketPointers.put(S[integerInBucket - 1], bucketPointers.get(S[integerInBucket - 1]) - 1);
+				}
+			}
+ 	        
+ 	    }
+
+ 		System.out.println("_____Third iteration__________");
+ 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+ 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
+ 	    }
+ 		
+ 		
+	}
+	
+	public static void setAllPointersInBucketsToBeginning(Object[] keySet, HashMap<String, Integer> bucketPointers) {
+		for (int i = 0; i < keySet.length; i++) {
+			bucketPointers.put((String) keySet[i], 0);
+		}
+	}
+	
+	public static void setAllPointersInBucketsToEnd(Object[] keySet, HashMap<String, Integer> bucketPointers, TreeMap<String, ArrayList<Integer>> bucketHash) {
+		for (int i = 0; i < keySet.length; i++) {
+			bucketPointers.put((String) keySet[i], bucketHash.get((String) keySet[i]).size() - 1);
+		}
 	}
 	
 	/*	Returns array of booleans that tells us the types of characters
