@@ -1,4 +1,5 @@
 ﻿
+Imports System.Diagnostics.Eventing.Reader
 Imports Microsoft.VisualBasic.CompilerServices
 
 Class SAIS
@@ -47,7 +48,7 @@ Class SAIS
         'initialize B and SA
         Dim BucketPointers As New SortedDictionary(Of Byte, Integer)
         'Dim SA_tmp As New Dictionary(Of Byte, Array)
-        For i As Integer = 0 To SA.Length-1
+        For i As Integer = 0 To SA.Length - 1
             SA(i) = -1
         Next
         'set bucket pointers to ends
@@ -72,7 +73,7 @@ Class SAIS
         'STEP2
         'set bucket pointers to beginnings
         previous = 0
-        For Each pair As KeyValuePair(Of Object,Integer) In Counts
+        For Each pair As KeyValuePair(Of Object, Integer) In Counts
             BucketPointers(pair.Key) = previous
             previous += pair.Value
         Next
@@ -107,9 +108,30 @@ Class SAIS
 
         'name LMS substrings by it's buckets
         Dim lmsName As Integer = 0
-        Dim S1(P1.Length) As Integer
-        For i As Integer = 0 To SA.Length - 1
+        Dim lmsPrev As Integer = SA(0)
+        Dim S1(P1.Length - 1) As Integer
+        Dim lmsCurr As Integer
+        For i As Integer = 0 To n - 1
+            If (P1.Contains(SA(i))) Then
+                lmsCurr = SA(i)
+                Do
+                    If (lmsCurr = n - 1) Then
+                        Exit Do
+                    End If
 
+                    If (S(lmsCurr) <> S(lmsPrev)) Then
+                        lmsName += 1
+                        Exit Do
+                    ElseIf (t(lmsCurr) = t(lmsPrev)) Then
+                        lmsCurr += 1
+                        lmsPrev += 1
+                    End If
+
+                Loop While (t(SA(lmsCurr)) = False)
+
+                S1(Array.IndexOf(P1, SA(i))) = lmsName
+                lmsPrev = lmsCurr
+            End If
         Next
 
 
