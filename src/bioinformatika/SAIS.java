@@ -1,5 +1,31 @@
+/*The MIT License (MIT)
+
+Copyright (c) <year> <copyright holders>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 package bioinformatika;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -15,10 +41,12 @@ public class SAIS {
 		
 		ArrayList<SaisStep> saisSteps = new ArrayList<>();
 		
-		String[] input = (readFile("/home/drago/Java/bioinformatika/input_data/test2.txt", Charset.defaultCharset()) + "$").split("(?!^)");;
+		String[] input = (readLinesFromFile(args[0]) + "$").split("(?!^)");;
 		String[] copiedOriginal = input;
 		
 		// Do SA-IS steps until we reach array with all different names
+		long startTime = System.currentTimeMillis();
+
 		while (true) {
 			System.out.println("Entered SA-IS iteration");
 			System.out.println("________________________");
@@ -118,10 +146,9 @@ public class SAIS {
 	 		
 	 		if (i == 0) {
 		 		System.out.println("lastSA: ");
-		 		for (int j = 0; j < lastSA.size() || j > 15; j++) {
-					System.out.print(lastSA.get(j) + " ");
+		 		for (int j = 0; j < lastSA.size() && j < 15; j++) {
+					System.out.println(lastSA.get(j));
 				}
-		 		System.out.println();
 	 		}
 	 		/*
 	 		System.out.println("BUKETPOJNTER");
@@ -139,6 +166,12 @@ public class SAIS {
 			*/
 			//System.exit(0);
 		}
+		
+
+		long estimatedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Time Running: " + estimatedTime + " ms");
+		System.out.println("Time Running: " + estimatedTime / 1000.0 + " s");
+		
 		
 	/*
 		System.out.println("PRINTING IT");
@@ -282,6 +315,19 @@ public class SAIS {
 	static String readFile(String path, Charset encoding) throws IOException {
 		byte[] encoded = Files.readAllBytes(Paths.get(path));
 		return new String(encoded, encoding);
+	}
+	
+	static String readLinesFromFile(String path) throws IOException {
+		File file = new File(path);
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		StringBuilder everything = new StringBuilder();
+		while ((line = br.readLine()) != null) {
+			everything.append(line);
+		}
+		br.close();
+		
+		return everything.toString();
 	}
  	
 }

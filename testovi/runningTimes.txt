@@ -1,0 +1,13 @@
+test1 0.013 s
+test2 0.043 s
+test3 0.103 s
+test4 0.278 s
+test5 0.367 s
+test6 1.028 s
+test7 1.005 s
+test8 3.731 s
+test9 4.559 s
+test10 6.606 s
+bac1 29.165 s
+bac2 34.966 s
+bac3 66.169 s
