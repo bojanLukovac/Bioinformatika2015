@@ -7,5 +7,9 @@ end
 
 def print_time(msg)
   timeNow = Time.now
-  printf "%-25s %s\n", msg, timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+  printf "%-35s %s\n", msg, timeNow.strftime("%H:%M:%S.#{timeNow.to_milliseconds % 1000}")
+end
+
+def print_time_in_seconds(msg, time)
+  printf "%s : %5.3f s\n", msg, time
 end

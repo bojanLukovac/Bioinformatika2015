@@ -1,2 +1,2 @@
-###Goran Hrženjak
+###Goran Hrzenjak
 ####Ruby
