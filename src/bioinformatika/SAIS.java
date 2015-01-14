@@ -15,7 +15,7 @@ public class SAIS {
 		
 		ArrayList<SaisStep> saisSteps = new ArrayList<>();
 		
-		String[] input = (readFile("/home/drago/Java/bioinformatika/input_data/eserihija.txt", Charset.defaultCharset()) + "$").split("(?!^)");;
+		String[] input = (readFile("/home/drago/Java/bioinformatika/input_data/test2.txt", Charset.defaultCharset()) + "$").split("(?!^)");;
 		String[] copiedOriginal = input;
 		
 		// Do SA-IS steps until we reach array with all different names
@@ -117,7 +117,11 @@ public class SAIS {
 	 	    }
 	 		
 	 		if (i == 0) {
-		 		System.out.println("lastSA: " + lastSA);
+		 		System.out.println("lastSA: ");
+		 		for (int j = 0; j < lastSA.size() || j > 15; j++) {
+					System.out.print(lastSA.get(j) + " ");
+				}
+		 		System.out.println();
 	 		}
 	 		/*
 	 		System.out.println("BUKETPOJNTER");
