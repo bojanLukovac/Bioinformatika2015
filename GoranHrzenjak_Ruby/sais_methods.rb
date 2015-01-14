@@ -55,15 +55,14 @@ class SAIS
     print_time("Start! Calculating for #{n} chars")
     
     
-    t_array = classify_type_of_chars(input_string)
-    print_time("Determined S/L types")
+    t_array, bucket_pointers =
+      classify_types_determine_bucket_ptrs(input_string, n, true)
+    print_time("L-S types and buckets")
     puts t_array.to_s
-    
-    bucket_pointers = determine_buckets(input_string, true)
     puts bucket_pointers.to_s
     
-    # to do
-    suffix_array = []
+    # new suffix array
+    suffix_array = initialize_suffix_array(n)
     
     
     end_time = Time.now
@@ -77,60 +76,46 @@ class SAIS
   end
   
   
-  def classify_type_of_chars(input_string)
+  def initialize_suffix_array(size)
+    sa = Array.new(size, -1)
+    return sa
+  end
+  
+
+
+  def classify_types_determine_bucket_ptrs(input_string, n, set_to_end)
     # array of L- or S-type characters
     # S-type : value 1, L-type : value 0
-    t_array = Array.new
     
-    str_reversed = input_string.reverse
-    str_reversed.each_with_index do |ascii_val, index|
-      
-      if index == 0
-        # the last suffix (char) is always S-type
-        t_array << 1
-      elsif index == 1
-        t_array << 0 
-      else
-        t_array << ((ascii_val < str_reversed[index - 1] ||
-              ascii_val == str_reversed[index - 1] && t_array[index - 1] == 1) ? 1 : 0)
     
-      end
-
-    end
-    t_array.reverse!
-    return t_array
-  end
-  
-  
-  def determine_buckets(input_string_array, set_to_end, *old_buckets)
+    t_array = Array.new(n, -1)
+    
+    t_array[n - 1] = 1
+    t_array[n - 2] = 0
     
     chars_count = Hash.new(0)
-    # calculate number of occurrences of each character in input 
-    input_string_array.each do |v|
-      chars_count[v] +=1
-    end
+    chars_count[input_string[n - 1]] += 1
+    chars_count[input_string[n - 2]] += 1
     
-    if old_buckets.size > 0
-      bucket_pointers = set_buckets_pointers(chars_count, set_to_end, old_buckets)
-    else
-      bucket_pointers = set_buckets_pointers(chars_count, set_to_end)
-    end
+    (n - 3).downto(0){ |i|
+      t_array[i] = ((input_string[i] < input_string[i + 1] ||
+            input_string[i] == input_string[i + 1] && t_array[i + 1] == 1 )? 1 : 0)
+      # calculate number of occurrences of each character in input 
+      chars_count[input_string[i]] +=1
+    }
     
-    return bucket_pointers
+    bucket_pointers = Hash.new(0)
+    total_count = 0
     
-  end
-  
-  def set_buckets_pointers(chars_count, set_to_end, *old_buckets)
-    
-    # set bucket pointers
-    # if set_to_end is True, pointer will be on last element
-    # if new_buckets is True, create new Hash, othervise just clear
-    if old_buckets.size == 0
-      bucket_pointers = Hash.new(0)
-    else
-      bucket_pointers = old_buckets[0][0]
-      bucket_pointers.clear
+    chars_count.sort.map do |char, count|
+      total_count += count
+      # This is initialization of bucket pointers
+      # Set them to the end of each bucket (step 1)
+      bucket_pointers[char] = (total_count - 1)
 
+    end
+    
+    return t_array, bucket_pointers
   end
   
 end
