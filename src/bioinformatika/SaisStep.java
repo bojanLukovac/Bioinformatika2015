@@ -284,28 +284,18 @@ public class SaisStep {
 		t[S.length - 1] = false;
 		t[S.length - 2] = true;
 		
-		for (int i = 0; i < S.length - 2; i++) {
-			int comparation = S[i].compareTo(S[i + 1]); 
-
-			if (comparation > 0) {
-				t[i] = true;
-			} else if (comparation < 0) {
+		for (int i = S.length - 3; i > 0; i--) {
+			int comparation = S[i].compareTo(S[i + 1]);
+			
+			if (comparation < 0) {
 				t[i] = false;
+			} else if (comparation > 0) {
+				t[i] = true;
 			} else {
-				int j = i + 1;
-				
-				while (S[j].compareTo(S[j + 1]) == 0) {
-					j++;
-				}
-
-				if (S[j].compareTo(S[j + 1]) > 0) {
-					setArray(t, i, j, true);
-				} else {
-					setArray(t, i, j, true);
-				}
-				i = j;
+				t[i] = t[i + 1];
 			}
 		}
+		
 		return t;
 	}
 

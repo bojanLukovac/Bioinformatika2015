@@ -11,7 +11,7 @@ public class SAIS {
 	public static void main(String[] args) {
 		
 		ArrayList<SaisStep> saisSteps = new ArrayList<>();
-		String input = "mmiissiissiippii$";
+		String input = "aaaaaaaaaaaaaaaaaaa$";
 		String copiedOriginal = input;
 		
 		// Do SA-IS steps until we reach array with all different names
@@ -160,15 +160,20 @@ public class SAIS {
 		String input = inputString;
 		String[] S = input.split("(?!^)");
 		
-		System.out.println("OVO JE STRING ZA SPLITTANJE : " + inputString);
-		
 		SaisStep saisStep = new SaisStep();
 		saisStep.setS(S);
 		
 		boolean[] t = saisStep.getTFromS(S);
+		
 		saisStep.setT(t);
 		ArrayList<Integer> lmsPointersArray = saisStep.getLMSPointersArray(S, t);
 		saisStep.setLmsPointersArray(lmsPointersArray);
+		
+		System.out.println("S = " + inputString);
+		for (int i = 0; i < t.length; i++) {
+			System.out.print(t[i] + " ");
+		}
+		System.out.println();
 		
 		/*
 		 * Create SA buckets and insert -1 for each value
