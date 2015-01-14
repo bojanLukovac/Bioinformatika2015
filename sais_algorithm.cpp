@@ -55,6 +55,45 @@ void SA_IS(unsigned char *s, int *SA, int n, int K, int cs, int level) {
 	  if(j>=0 && tget(j)) SA[bkt[chr(j)]--] = j;
     }
   
-  free(bkt); 
+  free(bkt);
+  
+  // compact sorted substrings into the first n1 items of SA; 2*n1 shouldn't be larger than n
+  n1 = 0;
+  for(i=0; i<n; i++)
+    if(isLMS(SA[i]))
+      SA[n1++]=SA[i];
+
+  for(i=n1; i<n; i++) SA[i] = EMPTY; // initialize substring lexicographic name array buffer
+  
+  // find lexicographic names of all substrings
+  int name = 0, prev = -1;
+  for(i=0; i<n1; i++) {
+    pos = SA[i];
+    diff = false;
+    for(int d=0; d<n; d++)
+      if(prev==-1 || pos+d==n-1 || prev+d==n-1 || chr(pos+d)!=chr(prev+d) || tget(pos+d)!=tget(prev+d)) {
+        diff = true;
+        break;
+      } else if(isLMS(pos+d) || isLMS(prev+d))
+        break;
+
+    if(diff) 
+      { name++; prev=pos; }
+	  pos=pos/2; //(pos%2==0)?pos/2:(pos-1)/2;
+    SA[n1+pos]=name-1; 
+  }
+  for(i=n-1, j=n-1; i>=n1; i--)
+	  if(SA[i]!=EMPTY) SA[j--]=SA[i];
+
+   // create s1 and SA1
+  int *SA1=SA, *s1=SA+n-n1;
+  
+  // recurse if names are not unique
+  if(name<n1) {
+    SA_IS((unsigned char*)s1, SA1, n1, name-1, sizeof(int), level+1);
+  } else { // generate the suffix array of s1 directly
+    for(i=0; i<n1; i++) SA1[s1[i]] = i;
+  }
+  
   free(t);
 }
