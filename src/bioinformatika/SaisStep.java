@@ -13,7 +13,7 @@ public class SaisStep {
 	private TreeMap<String, ArrayList<Integer>> bucketHash;
 	private Object[] keySet;
 	private HashMap<String, Integer> bucketPointers;
-	private int[] arrayWithNewNames;
+	private String[] arrayWithNewNames;
 	private ArrayList<Integer> SA;
 	
 	public ArrayList<Integer> getSA() {
@@ -27,7 +27,7 @@ public class SaisStep {
 	public SaisStep(String[] s, boolean[] t,
 			ArrayList<Integer> lmsPointersArray,
 			TreeMap<String, ArrayList<Integer>> bucketHash, Object[] keySet,
-			HashMap<String, Integer> bucketPointers, int[] arrayWithNewNames) {
+			HashMap<String, Integer> bucketPointers, String[] arrayWithNewNames) {
 		super();
 		this.S = s;
 		this.t = t;
@@ -42,11 +42,11 @@ public class SaisStep {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int[] getArrayWithNewNames() {
+	public String[] getArrayWithNewNames() {
 		return arrayWithNewNames;
 	}
 
-	public void setArrayWithNewNames(int[] arrayWithNewNames) {
+	public void setArrayWithNewNames(String[] arrayWithNewNames) {
 		this.arrayWithNewNames = arrayWithNewNames;
 	}
 
@@ -99,10 +99,12 @@ public class SaisStep {
 	}
 
 
-	public int[] getArrayWithNewNamesForEachLMSSubstring(ArrayList<Integer> lmsPointersArray,
+	public String[] getArrayWithNewNamesForEachLMSSubstring(ArrayList<Integer> lmsPointersArray,
 			TreeMap<String, ArrayList<Integer>> bucketHash, String[] S, boolean[] t) {
 	
-		int[] S1 = new int[lmsPointersArray.size()];
+		printArray(S, "Entered getArrayWithNewNames...");
+		
+		String[] S1 = new String[lmsPointersArray.size()];
  		ArrayList<Integer> SA = new ArrayList<>();
  	
 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
@@ -112,30 +114,34 @@ public class SaisStep {
 		}
 	
 		int newName = 0;
+		System.out.println("lmsPointers: " + lmsPointersArray);
 		
 		int lastKnownIndexOfLMSSubstringInSA = 0;
 		for (int i = 0; i < SA.size(); i++) {
 			if (lmsPointersArray.contains(SA.get(i))) {
 				lastKnownIndexOfLMSSubstringInSA = i;
-				System.out.println(lastKnownIndexOfLMSSubstringInSA);
 				break;
 			}
 		}
-		S1[lastKnownIndexOfLMSSubstringInSA] = newName;
+		S1[lmsPointersArray.indexOf(SA.get(lastKnownIndexOfLMSSubstringInSA))] = Integer.toString(newName);
+		System.out.println("na mjesto " + lastKnownIndexOfLMSSubstringInSA + " stavljamo " + newName);
 		
 		for (int i = lastKnownIndexOfLMSSubstringInSA + 1; i < SA.size(); i++) {
 			if (lmsPointersArray.contains(SA.get(i)) == true) {
 				
 				if(compareLMSSubstrings(SA.get(i), SA.get(lastKnownIndexOfLMSSubstringInSA), S, t) == true) {
-					S1[lmsPointersArray.indexOf(SA.get(i))] = newName;
+					S1[lmsPointersArray.indexOf(SA.get(i))] = Integer.toString(newName);
 				} else {
 					newName++;
-					S1[lmsPointersArray.indexOf(SA.get(i))] = newName;
+					S1[lmsPointersArray.indexOf(SA.get(i))] = Integer.toString(newName);
 				}
 				lastKnownIndexOfLMSSubstringInSA = i;
 			} 
 		}
-
+		System.out.println("AHHHHHHHHHHHAAAAAAAAAAAAA");
+		System.out.println("ovo je SA: " + SA);
+		this.printArray(S1, "UNUTAR STVARANJA ARRAYA");
+		
 		this.SA = SA;
 		return S1;
 	
@@ -151,9 +157,7 @@ public class SaisStep {
 			for (int j = bucketHash.get(keySet[i]).size() - 1; j >= 0; j--) {
 				int integerInBucket = bucketHash.get(keySet[i]).get(j);
 				if (integerInBucket > 0 && t[integerInBucket - 1] == false) {
-					bucketHash.get(S[integerInBucket - 1]).set(
-							bucketPointers.get(S[integerInBucket - 1]),
-							integerInBucket - 1);
+					bucketHash.get(S[integerInBucket - 1]).set(bucketPointers.get(S[integerInBucket - 1]), integerInBucket - 1);
 					bucketPointers.put(S[integerInBucket - 1],
 							bucketPointers.get(S[integerInBucket - 1]) - 1);
 				}
@@ -208,6 +212,13 @@ public class SaisStep {
 		
 	}
 
+	public String joinArray(String[] aArr) {
+	    StringBuilder sbStr = new StringBuilder();
+	    for (int i = 0, il = aArr.length; i < il; i++) {
+	        sbStr.append(aArr[i]);
+	    }
+	    return sbStr.toString();
+	}
 
 	public String joinArray(int[] aArr) {
 	    StringBuilder sbStr = new StringBuilder();
@@ -325,4 +336,12 @@ public class SaisStep {
 		return lmsPointers;
 	}
 
+	public static void printArray(String[] arr, String message) {
+		System.out.println(message);
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print(arr[i]);
+		}
+		System.out.println("");
+	}
+	
 }
