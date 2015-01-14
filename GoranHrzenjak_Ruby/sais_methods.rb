@@ -64,10 +64,34 @@ class SAIS
     # new suffix array
     suffix_array = initialize_suffix_array(n)
     
+    # p_1 array
+    lms_pointers, lms_pointers_hash =
+      determine_LMS_substring_pointers(t_array,
+      bucket_pointers, suffix_array, input_string)
+    print_time("After 1st step")  
+    print "P1: "
+    puts lms_pointers.to_s
+    puts "SA after 1st step: "
+    puts suffix_array.to_s
+    puts bucket_pointers.to_s
+    
+    induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
+    puts "SA & B(after induceSA_L): "
+    puts suffix_array.to_s
+    
+    print_time("After Induce SA_L")
+    
+    
+    induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+    puts "SA & B(after induceSA_S): "
+    puts suffix_array.to_s
+    
+    print_time("After Induce SA_S")
     
     end_time = Time.now
     puts "-- SA_IS return --" + ">" * @recursion_level + "\n"
-    print_time_in_seconds("Time for #{input_string.size} chars", (end_time-start_time))
+    print_time_in_seconds("Time for #{input_string.size} chars",
+      (end_time-start_time))
     
     @recursion_level -= 1
     
@@ -99,7 +123,7 @@ class SAIS
     
     (n - 3).downto(0){ |i|
       t_array[i] = ((input_string[i] < input_string[i + 1] ||
-            input_string[i] == input_string[i + 1] && t_array[i + 1] == 1 )? 1 : 0)
+        input_string[i] == input_string[i + 1] && t_array[i + 1] == 1 )? 1 : 0)
       # calculate number of occurrences of each character in input 
       chars_count[input_string[i]] +=1
     }
@@ -117,5 +141,140 @@ class SAIS
     
     return t_array, bucket_pointers
   end
+  
+  
+  def determine_buckets(input_string_array, set_to_end, *old_buckets)
+    
+    chars_count = Hash.new(0)
+    # calculate number of occurrences of each character in input 
+    input_string_array.each do |v|
+      chars_count[v] +=1
+    end
+    
+    if old_buckets.size > 0
+      bucket_pointers = set_buckets_pointers(chars_count, set_to_end, old_buckets)
+    else
+      bucket_pointers = set_buckets_pointers(chars_count, set_to_end)
+    end
+    
+    return bucket_pointers
+    
+  end
+  
+  
+  def set_buckets_pointers(chars_count, set_to_end, *old_buckets)
+    
+    # set bucket pointers
+    # if set_to_end is True, pointer will be on last element
+    # if there is no old_buckets parameter pased, create new Hash
+    # otherwise, use old buckets and set pointers to beggining/end
+    if old_buckets.size == 0
+      bucket_pointers = Hash.new(0)
+    else
+      bucket_pointers = old_buckets[0][0]
+      bucket_pointers.clear
+
+    end
+
+    total_count = 0
+    
+    chars_count.sort.map do |char, count|
+      total_count += count
+      bucket_pointers[char] =
+        (set_to_end ? (total_count - 1) : (total_count - count))
+
+    end
+    
+    #puts bucket_pointers.to_s
+    
+    return bucket_pointers
+  end
+  
+  
+  def determine_LMS_substring_pointers(t_array, bucket_pointers,
+                                       suffix_array, input_string)
+    p_1 = []
+    p_1_hash = {}
+    hash_size = 0
+    t_array.each_with_index do |type, index|
+      if type == 1 && index > 0 && t_array[index - 1] == 0
+        p_1 << index
+        p_1_hash[index] = hash_size
+        hash_size += 1
+        # add LMS suffix index to SA in appropriate bucket
+        # shift bucket pointer left
+        # (1st step of induced sort algorithm I)
+        char_value = input_string[index]
+        pointer = bucket_pointers[char_value]
+        bucket_pointers[char_value] -= 1
+        suffix_array[pointer] = index
+      end
+      
+    end
+    return p_1, p_1_hash
+  end
+  
+  
+  def induce_SA_L(t_array, bucket_pointers,
+                  suffix_array, input_string)
+    # (2nd step of induced sort algorithm )
+    # set bucket pointers to the FIRST element of each bucket
+    #bucket_pointers = determine_buckets(input_string, false, bucket_pointers)
+
+    bucket_pointers = determine_buckets(input_string, false, bucket_pointers)
+
+    
+    # foreach SA[i] > 0 check type
+    suffix_array.each_with_index do |val, index|
+      new_value = suffix_array[index]
+      
+      if new_value > 0
+        if (t_array[new_value - 1] == 0)
+          # if the type is L, add SA[i]-1 to the BEGGINING of appropriate bucket
+          # shift bucket pointer RIGHT
+          char_value = input_string[new_value - 1]
+          pointer = bucket_pointers[char_value]
+          bucket_pointers[char_value] += 1
+          suffix_array[pointer] = new_value - 1
+          
+          #puts suffix_array.to_s
+        end
+      end
+
+    end
+  end
+  
+  
+  def induce_SA_S(t_array, bucket_pointers,
+                  suffix_array, input_string)
+    # (3rd step of induced sort algorithm)
+    # set bucket pointers to the LAST element of each bucket
+    bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
+
+
+    # foreach SA[i] > 0 check type
+    # this time, check SA from the end to the beggining
+    suffix_array.reverse.each_with_index do |val, index|
+
+      new_value = suffix_array[-(index + 1)]
+      if new_value > 0
+        
+        if (t_array[new_value - 1] == 1)
+
+          # if the type is S, add SA[i]-1 on the END of appropriate bucket
+          # shift bucket pointer LEFT
+          char_value = input_string[new_value - 1]
+          pointer = bucket_pointers[char_value]
+          bucket_pointers[char_value] -= 1
+          suffix_array[pointer] = new_value - 1
+          
+          #puts suffix_array.to_s
+        end
+      end
+    end  
+    #puts bucket_pointers.to_s
+  end
+  
+  
   
 end

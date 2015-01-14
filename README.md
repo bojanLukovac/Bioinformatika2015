@@ -10,12 +10,13 @@ Usage
 
 Input arguments	
   * input file name : path to the file to read from
-  * input file form [optional] 
+  * input file format [optional] 
     * 0 - regular string [DEFAULT]
 	* 1 - FASTA format
-  * output file name [optional] : file name of the file to write in in *output* folder
+  * output file name [optional] : file to write in 
     if no name is provided, output will be written in output/[<input file name>]_output.txt file
+	otherwise in output/[<output file name>]
 	
 example:
 
-    $ ruby main.rb input_data [<input file format>] [<output file name>]
+    $ ruby main.rb input_data/test2.txt 0 test2_new.txt
