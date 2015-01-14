@@ -25,14 +25,65 @@ public class SAIS {
 				break;
 			}
 		}
+		SaisStep methods = saisSteps.get(0);
+	
+		// GET last SA from last S
+		int[] lastS = saisSteps.get(saisSteps.size() - 1).getArrayWithNewNames();
+		ArrayList<Integer> lmsPointers;
+		int[] lastSA = new int[lastS.length];
 		
+		for (int i = 0; i < lastS.length; i++) {
+			lastSA[lastS[i]] = i;
+		}
 		
-		/*
+		for (int i = saisSteps.size() - 1; i >= 0; i--) {
+			
+			SaisStep step = saisSteps.get(i);
+			TreeMap<String, ArrayList<Integer>> bucketHash = step.getBucketHash();
+			HashMap<String, Integer> bucketPointers = step.getBucketPointers();
+			// Do the first step in recovery
+			step.setAllPointersInBucketsToEnd(step.getKeySet(), bucketPointers, bucketHash);
+			step.setSAToMinusOne(bucketHash);
+			lmsPointers = step.getLmsPointersArray();
+			
+			for (int j = lastSA.length - 1; j >= 0; j--) {
+				int index = lastSA[j];
+				int lmsPointer = lmsPointers.get(index);
+				int correspondingSuffix = lastS[index];
+				
+				bucketHash.get(String.valueOf(correspondingSuffix)).set(bucketPointers.get(String.valueOf(correspondingSuffix)), lmsPointer);
+				bucketPointers.put(String.valueOf(correspondingSuffix), bucketPointers.get(String.valueOf(correspondingSuffix)) - 1);
+			}
+			
+			System.out.println("BUKETHASH");
+	 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+	 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
+	 	    }
+	 		
+	 		System.out.println("BUKETPOJNTER");
+	 		for (Entry<String, Integer> entry : bucketPointers.entrySet()) {
+	 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
+	 	    }
+			
+			/*
+			for (Integer lmsPointer : lmsPointersArray) {
+				String lms = S[lmsPointer];
+				bucketHash.get(lms).set(bucketPointers.get(lms), lmsPointer);
+				bucketPointers.put(lms, bucketPointers.get(lms) - 1);
+			}
+			*/
+			System.exit(0);
+		}
+		
+	/*
 		System.out.println("PRINTING IT");
 		for (SaisStep step : saisSteps) {
-			System.out.println(step.joinArray(step.getArrayWithNewNames()));
+			for (Integer number : step.getSA()) {
+				System.out.print(number + " ");
+			}
+			System.out.println();
 		}
-		*/
+	*/
 		
 		/*
 		SaisStep firstSolution = doSAIS("ATTAGCGAGCG$");

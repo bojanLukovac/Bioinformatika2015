@@ -14,7 +14,16 @@ public class SaisStep {
 	private Object[] keySet;
 	private HashMap<String, Integer> bucketPointers;
 	private int[] arrayWithNewNames;
+	private ArrayList<Integer> SA;
 	
+	public ArrayList<Integer> getSA() {
+		return SA;
+	}
+
+	public void setSA(ArrayList<Integer> sA) {
+		SA = sA;
+	}
+
 	public SaisStep(String[] s, boolean[] t,
 			ArrayList<Integer> lmsPointersArray,
 			TreeMap<String, ArrayList<Integer>> bucketHash, Object[] keySet,
@@ -127,6 +136,7 @@ public class SaisStep {
 			} 
 		}
 
+		this.SA = SA;
 		return S1;
 	
 	}
@@ -186,6 +196,16 @@ public class SaisStep {
 			}
 		}
 		return bucketHash;
+	}
+	
+	public void setSAToMinusOne(TreeMap<String, ArrayList<Integer>> bucketHash) {
+		
+ 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
+ 	        for (int i = 0; i < entry.getValue().size(); i++) {
+ 	        	entry.getValue().set(i, -1);
+ 	        }   
+ 	    }
+		
 	}
 
 
