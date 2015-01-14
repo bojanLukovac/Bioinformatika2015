@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -16,8 +15,8 @@ public class SAIS {
 		
 		ArrayList<SaisStep> saisSteps = new ArrayList<>();
 		
-		String input = readFile("/home/drago/Java/bioinformatika/input_data/eserihija.txt", Charset.defaultCharset()) + "$";
-		String copiedOriginal = input;
+		String[] input = (readFile("/home/drago/Java/bioinformatika/input_data/eserihija.txt", Charset.defaultCharset()) + "$").split("(?!^)");;
+		String[] copiedOriginal = input;
 		
 		// Do SA-IS steps until we reach array with all different names
 		while (true) {
@@ -27,7 +26,7 @@ public class SAIS {
 			saisSteps.add(solution);
 			
 			if (areAllElementsDifferent(solution.getArrayWithNewNames()) == false) {
-				input = solution.joinArray(solution.getArrayWithNewNames());
+				input = solution.getArrayWithNewNames();
 			} else {
 				break;
 			}
@@ -37,6 +36,10 @@ public class SAIS {
 		// GET last SA from last S
 		String[] lastS = saisSteps.get(saisSteps.size() - 1).getArrayWithNewNames();
 		ArrayList<String> lastSA = new ArrayList<>();
+		TreeMap<String, ArrayList<Integer>> bucketHash;
+		HashMap<String, Integer> bucketPointers;
+		ArrayList<Integer> lmsPointers;
+		
 		for (int i = 0; i < lastS.length; i++) {
 			lastSA.add("0");
 		}
@@ -45,42 +48,48 @@ public class SAIS {
 			lastSA.set(Integer.valueOf(lastS[i]), String.valueOf(i));
 		}
 		
-		System.out.println("KREĆEMO S RECOVERIJEM");
+		//System.out.println("KREĆEMO S RECOVERIJEM");
 		for (int i = saisSteps.size() - 1; i >= 0; i--) {
-			System.out.println("______ULAZAK U ITERACIJU _________");
+			//System.out.println("______ULAZAK U ITERACIJU _________");
 			
 			SaisStep step = saisSteps.get(i);
-			TreeMap<String, ArrayList<Integer>> bucketHash = step.getBucketHash();
-			HashMap<String, Integer> bucketPointers = step.getBucketPointers();
+			bucketHash = step.getBucketHash();
+			bucketPointers = step.getBucketPointers();
 			// Do the first step in recovery
 			
 			step.setSAToMinusOne(bucketHash);
 			
 			step.setAllPointersInBucketsToEnd(step.getKeySet(), bucketPointers, bucketHash);
 		
-			ArrayList<Integer> lmsPointers = step.getLmsPointersArray();
+			lmsPointers = step.getLmsPointersArray();
+//			HashMap<Integer, Integer> lmsPointersHash = step.getLmsPointersHash();
+			
+//			System.out.println("array size = " + lmsPointers);
+//			System.out.println("HASH size = " + lmsPointersHash);
+			
 			
 			if (i == 0) {
-				lastS = copiedOriginal.split("(?!^)");
-				step.printArray(lastS, "0 POSLJEDNJI S");
+				lastS = copiedOriginal;
+				//step.printArray(lastS, "0 POSLJEDNJI S");
 			} else {
 				lastS = saisSteps.get(i - 1).getArrayWithNewNames();
-				step.printArray(lastS, "POSLJEDNJI S");
+				//step.printArray(lastS, "POSLJEDNJI S");
 			}
 			
 			
-			System.out.println("bucketHash: " + bucketHash);
-			System.out.println("bucketPointers: " + bucketPointers);
-			System.out.println("lastSA: " + lastSA);
-			System.out.println("lastS: " + step.joinArray(lastS));
+			//System.out.println("bucketHash: " + bucketHash);
+			//System.out.println("bucketPointers: " + bucketPointers);
+			//System.out.println("lastSA: " + lastSA);
+			//System.out.println("lastS: " + step.joinArray(lastS));
 			
 			for (int j = lastSA.size() - 1; j >= 0; j--) {
 				String index = lastSA.get(j);
+				//System.out.println("index = " + index);
 				int lmsPointer = lmsPointers.get(Integer.valueOf(index));
 				String correspondingSuffix = lastS[lmsPointer];
-				System.out.println("INDEX: " + index);
-				System.out.println("Odgovarajuci suffix: " + String.valueOf(correspondingSuffix));
-				System.out.println("LMS pointer: " + lmsPointer);
+				//System.out.println("INDEX: " + index);
+				//System.out.println("Odgovarajuci suffix: " + String.valueOf(correspondingSuffix));
+				//System.out.println("LMS pointer: " + lmsPointer);
 				
 				bucketHash.get(String.valueOf(correspondingSuffix))
 					.set(bucketPointers.get(String.valueOf(correspondingSuffix)), lmsPointer);
@@ -93,12 +102,12 @@ public class SAIS {
 			step.setAllPointersInBucketsToEnd(step.getKeySet(), bucketPointers, bucketHash);
 			methods.doThirdIteration(step.getS(), step.getT(), bucketHash, bucketPointers, step.getKeySet());
 			
-			System.out.println("BUKETHASH");
+		/*	System.out.println("BUKETHASH");
 	 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
 	 	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
 	 	        
 	 	    }
-	 	    
+	 	  */  
 	 		lastSA = new ArrayList<>();
 	 		
 	 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
@@ -107,8 +116,9 @@ public class SAIS {
 	 	        }
 	 	    }
 	 		
-	 		System.out.println("lastSA: " + lastSA);
-	 		
+	 		if (i == 0) {
+		 		System.out.println("lastSA: " + lastSA);
+	 		}
 	 		/*
 	 		System.out.println("BUKETPOJNTER");
 	 		for (Entry<String, Integer> entry : bucketPointers.entrySet()) {
@@ -160,25 +170,29 @@ public class SAIS {
 		return true;
 	}
 	
-	public static SaisStep doSAIS(String inputString) {
-
-		String input = inputString;
-		String[] S = input.split("(?!^)");
+	public static SaisStep doSAIS(String[] S) {
 		
 		SaisStep saisStep = new SaisStep();
 		saisStep.setS(S);
+		System.out.println("Got S splitted to array.");
+		System.out.println("s.length = " + S.length);
 		
 		boolean[] t = saisStep.getTFromS(S);
-		
 		saisStep.setT(t);
-		ArrayList<Integer> lmsPointersArray = saisStep.getLMSPointersArray(S, t);
+		System.out.println("Got L and S types");
+		
+		ArrayList<Integer> lmsPointersArray = saisStep.getLMSPointersHash(S, t);
 		saisStep.setLmsPointersArray(lmsPointersArray);
 		
-		System.out.println("S = " + inputString);
+		System.out.println("Got lmsPointersArray");
+	
+		/*
+		//System.out.println("S = " + inputString);
 		for (int i = 0; i < t.length; i++) {
-			System.out.print(t[i] + " ");
+			//System.out.print(t[i] + " ");
 		}
 		System.out.println();
+		*/
 		
 		/*
 		 * Create SA buckets and insert -1 for each value
@@ -186,9 +200,11 @@ public class SAIS {
 		TreeMap<String, ArrayList<Integer>> bucketHash = saisStep.getBucketHashFromSAndInitializeToMinusOne(S);
 		saisStep.setBucketHash(bucketHash);
 		
+		System.out.println("Got bucketHash");
+		
  		Object[] keySet = bucketHash.keySet().toArray();
  		saisStep.setKeySet(keySet);
- 		
+ 		System.out.println("Got keyset");
  		/*
  		 *	HashMap that stores pointers on bucket arrays
  		 * 	For example, this is how it's done in powerpoint presentations: 
@@ -198,6 +214,7 @@ public class SAIS {
  		HashMap<String, Integer> bucketPointers = new HashMap<>();
  		saisStep.setBucketPointers(bucketPointers);
  		saisStep.setAllPointersInBucketsToEnd(keySet, bucketPointers, bucketHash);
+ 		System.out.println("Set all bucketpointers to end");
  		
  		/*
  		 * Algorithm 1, first iteration
@@ -207,26 +224,28 @@ public class SAIS {
 			bucketHash.get(lms).set(bucketPointers.get(lms), lmsPointer);
 			bucketPointers.put(lms, bucketPointers.get(lms) - 1);
 		}
+ 		System.out.println("Done with first step");
  		
  		/*
  		 * Values after first iteration
  		 * */
- 		System.out.println("____First iteration set LMS indexes__________");
+ 		/*System.out.println("____First iteration set LMS indexes__________");
  		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
  	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
  	    }
- 		
+ 		*/
  		/*
  		 * Algorithm 1, second iteration
  		 * Set all pointers in buckets to beginning
  		 * */
  		saisStep.setAllPointersInBucketsToBeginning(keySet, bucketPointers);
  		saisStep.doSecondIteration(S, t, bucketHash, bucketPointers);
- 		System.out.println("____Second iteration______");
+ 		System.out.println("Done with second step");
+ 		/*System.out.println("____Second iteration______");
  		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
  	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
  	    }
- 		
+ 		*/
  		
  		/*
  		 * Algorithm 1, third iteration
@@ -234,21 +253,23 @@ public class SAIS {
  		 * */
  		saisStep.setAllPointersInBucketsToEnd(keySet, bucketPointers, bucketHash);
  		saisStep.doThirdIteration(S, t, bucketHash, bucketPointers, keySet);
- 		System.out.println("_____Third iteration__________");
+ 		System.out.println("Done with third step");
+ 		/*System.out.println("_____Third iteration__________");
  		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
  	        System.out.println("key ->" + entry.getKey() + ", value->" + entry.getValue());   
  	    }
- 		
+ 		*/
  		
  		// TEST
  		// boolean result = compareLMSSubstrings(3, 7, S, t);
  		 //System.out.println(result);
  		
  		// STEP 4,  Get new array with new name for each LMS substring	
- 		String[] S1 = saisStep.getArrayWithNewNamesForEachLMSSubstring(lmsPointersArray, bucketHash, S, t);
- 		SaisStep.printArray(S1, "TESTIRAMO");
+ 		String[] S1 = saisStep.getArrayWithNewNamesForEachLMSSubstring(bucketHash, S, t);
+ 		//SaisStep.printArray(S1, "TESTIRAMO");
  		saisStep.setArrayWithNewNames(S1);
-		System.out.println("array with new name: " + Arrays.toString(S1));
+		//System.out.println("array with new name: " + Arrays.toString(S1));
+ 		System.out.println("Got array with new names");
 		
 		return saisStep;
 	

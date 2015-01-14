@@ -2,8 +2,8 @@ package bioinformatika;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 public class SaisStep {
 
@@ -15,6 +15,7 @@ public class SaisStep {
 	private HashMap<String, Integer> bucketPointers;
 	private String[] arrayWithNewNames;
 	private ArrayList<Integer> SA;
+	private HashMap<Integer, Integer> lmsPointersHash;
 	
 	public ArrayList<Integer> getSA() {
 		return SA;
@@ -98,13 +99,13 @@ public class SaisStep {
 		this.bucketPointers = bucketPointers;
 	}
 
-
-	public String[] getArrayWithNewNamesForEachLMSSubstring(ArrayList<Integer> lmsPointersArray,
+	public String[] getArrayWithNewNamesForEachLMSSubstring(
 			TreeMap<String, ArrayList<Integer>> bucketHash, String[] S, boolean[] t) {
+		System.out.println("Getting new names...");
 	
-		printArray(S, "Entered getArrayWithNewNames...");
+		//printArray(S, "Entered getArrayWithNewNames...");
 		
-		String[] S1 = new String[lmsPointersArray.size()];
+		String[] S1 = new String[lmsPointersHash.size()];
  		ArrayList<Integer> SA = new ArrayList<>();
  	
 		for (Entry<String, ArrayList<Integer>> entry : bucketHash.entrySet()) {
@@ -114,34 +115,36 @@ public class SaisStep {
 		}
 	
 		int newName = 0;
-		System.out.println("lmsPointers: " + lmsPointersArray);
+		//System.out.println("lmsPointers: " + lmsPointersArray);
 		
 		int lastKnownIndexOfLMSSubstringInSA = 0;
 		for (int i = 0; i < SA.size(); i++) {
-			if (lmsPointersArray.contains(SA.get(i))) {
+			if (lmsPointersHash.containsKey(SA.get(i))) {
 				lastKnownIndexOfLMSSubstringInSA = i;
 				break;
 			}
 		}
-		S1[lmsPointersArray.indexOf(SA.get(lastKnownIndexOfLMSSubstringInSA))] = Integer.toString(newName);
-		System.out.println("na mjesto " + lastKnownIndexOfLMSSubstringInSA + " stavljamo " + newName);
+		S1[lmsPointersHash.get(SA.get(lastKnownIndexOfLMSSubstringInSA))] = Integer.toString(newName);
+		//System.out.println("na mjesto " + lastKnownIndexOfLMSSubstringInSA + " stavljamo " + newName);
 		
+		System.out.println("Entering loop that sets new names");
 		for (int i = lastKnownIndexOfLMSSubstringInSA + 1; i < SA.size(); i++) {
-			if (lmsPointersArray.contains(SA.get(i)) == true) {
+			if (lmsPointersHash.containsKey(SA.get(i)) == true) {
 				
 				if(compareLMSSubstrings(SA.get(i), SA.get(lastKnownIndexOfLMSSubstringInSA), S, t) == true) {
-					S1[lmsPointersArray.indexOf(SA.get(i))] = Integer.toString(newName);
+					S1[lmsPointersHash.get(SA.get(i))] = Integer.toString(newName);
 				} else {
 					newName++;
-					S1[lmsPointersArray.indexOf(SA.get(i))] = Integer.toString(newName);
+					S1[lmsPointersHash.get(SA.get(i))] = Integer.toString(newName);
 				}
 				lastKnownIndexOfLMSSubstringInSA = i;
 			} 
 		}
-		System.out.println("AHHHHHHHHHHHAAAAAAAAAAAAA");
+	/*	System.out.println("AHHHHHHHHHHHAAAAAAAAAAAAA");
 		System.out.println("ovo je SA: " + SA);
 		this.printArray(S1, "UNUTAR STVARANJA ARRAYA");
-		
+		*/
+		System.out.println("Zavrsavamo s trazenjem novih imena");
 		this.SA = SA;
 		return S1;
 	
@@ -246,7 +249,6 @@ public class SaisStep {
 				}
 			}
 			
-			
 			if (t[firstLMS] == false && t[secondLMS] == false) {
 				return true;
 			} else if (t[firstLMS] == true && t[secondLMS] == true) {
@@ -255,11 +257,8 @@ public class SaisStep {
 			} else {
 				return false;
 			}
-		
 		}
-		
 		return false;
-		
 	}
 	
 	public void setAllPointersInBucketsToBeginning(Object[] keySet, HashMap<String, Integer> bucketPointers) {
@@ -316,14 +315,31 @@ public class SaisStep {
 	 * S type = false
 	 * L type = true
 	 * */
-	public ArrayList<Integer> getLMSPointersArray(String[] S, boolean[] t) {
+	public ArrayList<Integer> getLMSPointersHash(String[] S, boolean[] t) {
+		
+		HashMap<Integer, Integer> lmsPointersHash = new HashMap<>();
+		
 		ArrayList<Integer> lmsPointers = new ArrayList<>();
+		
 		for (int i = 1; i < S.length; i++) {
 			if (t[i - 1] == true && t[i] == false) {
 				lmsPointers.add(i);
+				lmsPointersHash.put(i, lmsPointers.size() - 1);
 			}
 		}
+		
+		lmsPointers.trimToSize();
+		this.lmsPointersHash = lmsPointersHash;
+		this.lmsPointersArray = lmsPointers;
 		return lmsPointers;
+	}
+
+	public HashMap<Integer, Integer> getLmsPointersHash() {
+		return lmsPointersHash;
+	}
+
+	public void setLmsPointersHash(HashMap<Integer, Integer> lmsPointersHash) {
+		this.lmsPointersHash = lmsPointersHash;
 	}
 
 	public static void printArray(String[] arr, String message) {
