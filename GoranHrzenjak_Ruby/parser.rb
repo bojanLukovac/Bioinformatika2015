@@ -49,11 +49,12 @@ class Parser
     # this is optional - if there is no arg passed,
     # output filename should be [INPUT_FILENAME]_output.txt
     if (ARGV.length > 2)
-      @output_file_name = "output\\#{ARGV[2]}"
+      @output_file_name = "output\/#{ARGV[2]}"
     else
       @output_file_name =
-      "output\\#{File.basename(@input_file_name, File.extname(@input_file_name))}_output.txt" 
+      "output\/#{File.basename(@input_file_name, File.extname(@input_file_name))}_output.txt" 
     end
+    
     
     # check if there is the second argument - input file format flag
     # 0 for regular string, 1 for FASTA format
@@ -112,6 +113,9 @@ class Parser
   
   
   def write_output(suffix_array)
+    if !(Dir.exists?("output"))
+      Dir.mkdir("output")
+    end
     File.open(@output_file_name, @file_write_mod) { |file| file.write("#{suffix_array}\n") }
     puts "Output writen to #{@output_file_name}"
     if @input_file_format == 1
