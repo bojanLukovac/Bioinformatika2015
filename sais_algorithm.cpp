@@ -79,14 +79,14 @@ void SA_IS(unsigned char *s, int *SA, int n, int K, int cs, int level) {
 
     if(diff) 
       { name++; prev=pos; }
-	  pos=pos/2; //(pos%2==0)?pos/2:(pos-1)/2;
+    pos = pos/2; //(pos%2==0)?pos/2:(pos-1)/2;
     SA[n1+pos]=name-1; 
   }
   for(i=n-1, j=n-1; i>=n1; i--)
-	  if(SA[i]!=EMPTY) SA[j--]=SA[i];
+	  if(SA[i]!=EMPTY) SA[j--] = SA[i];
 
    // create s1 and SA1
-  int *SA1=SA, *s1=SA+n-n1;
+  int *SA1 = SA, *s1 = SA+n-n1;
   
   // recurse if names are not unique
   if(name<n1) {
@@ -95,5 +95,36 @@ void SA_IS(unsigned char *s, int *SA, int n, int K, int cs, int level) {
     for(i=0; i<n1; i++) SA1[s1[i]] = i;
   }
   
+  bkt = (int *)malloc(sizeof(int)*(K+1)); // bucket counters
+
+  // put all left-most S characters into their buckets
+  getBuckets(s, bkt, n, K, cs, true); // find ends of buckets
+  j = 0;
+  for(i=1; i<n; i++)
+  	if(isLMS(i)) s1[j++] = i; // get p1
+  for(i=0; i<n1; i++) SA1[i] = s1[SA1[i]]; // get index in s1
+  for(i=n1; i<n; i++) SA[i] = EMPTY; // init SA[n1..n-1]
+  for(i=n1-1; i>=0; i--) {
+	j=SA[i]; SA[i]=EMPTY;
+	if(level==0 && i==0)
+        	SA[0] = n-1;
+      	else
+        	SA[bkt[chr(j)]--]=j;
+  }
+  getBuckets(s, bkt, n, K, cs, false); // find heads of buckets
+  if(level==0) bkt[0]++; 
+  for(i=0; i<n; i++)
+    if(SA[i]!=EMPTY) {
+	  j = SA[i]-1; 
+	  if(j>=0 && !tget(j)) SA[bkt[chr(j)]++] = j;
+    }
+  getBuckets(s, bkt, n, K, cs, true); // find tails of buckets
+  for(i=n-1; i>=0; i--)
+    if(SA[i]!=EMPTY) {
+	  j = SA[i]-1; 
+	  if(j>=0 && tget(j)) SA[bkt[chr(j)]--] = j;
+    }
+
+  free(bkt);
   free(t);
 }
