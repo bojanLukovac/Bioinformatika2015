@@ -26,13 +26,10 @@ input_parser.get_input_strings.each do |input_string|
   sa_is.calculate_suffix_array
   end_time = Time.now
   
-  print_time_in_seconds("\nTime to calculate suffix array", (end_time - start_time))
+  print_time_in_seconds("\nTime to calculate suffix array with #{input_string.size} chars", (end_time - start_time))
   
-  string_out = sa_is.get_output_SA
- 
-  for i in 0..14
-    #puts "#{string_out[i]}"
-  end
+  suffix_array_out = sa_is.get_output_SA
+
   
-  input_parser.write_output(string_out)
+  input_parser.write_output(suffix_array_out)
 end

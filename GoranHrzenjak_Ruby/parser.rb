@@ -76,7 +76,12 @@ class Parser
     
     if @input_file_format == 0
       puts "Reading regular string"
-      input_strings << input_data_file.gets
+      data = ''
+
+      input_data_file.each_line do |line|
+        data += line
+      end
+      input_strings << data
 
     elsif @input_file_format == 1
       puts "Reading FASTA format"
@@ -90,7 +95,7 @@ class Parser
         sequence_string = rec[(nl + 1)..-1]
         sequence_string.gsub!(/\n/, '')
         input_strings << sequence_string
-        #puts [header, sequence_string.length].join(" ")
+ 
       end
       
     else

@@ -52,21 +52,21 @@ class SAIS
     n = input_string.size
     
     puts "-- SA_IS called --" + ">" * @recursion_level + "\n"
-    print_time("Start! Calculating for #{n} chars")
+    #print_time("Start! Calculating for #{n} chars")
+    print "."
     
-    
-    t_array, bucket_pointers =
+    t_array, bucket_pointers, buckets_beginnings_ends =
       classify_types_determine_bucket_ptrs(input_string, n, true)
-    print_time("L-S types and buckets")
+    #print_time("L-S types and buckets")
     #puts t_array.to_s
     #puts bucket_pointers.to_s
+    print "."
     
     # new suffix array
     suffix_array = initialize_suffix_array(n)
     
     # p_1 array
-    lms_pointers, lms_pointers_hash =
-      determine_LMS_substring_pointers(t_array,
+    lms_pointers = determine_LMS_substring_pointers(t_array,
       bucket_pointers, suffix_array, input_string)
     #print_time("After 1st step")  
     #print "P1: "
@@ -74,30 +74,34 @@ class SAIS
     #puts "SA after 1st step: "
     #puts suffix_array.to_s
     #puts bucket_pointers.to_s
+    print "."
     
-    induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
+    induce_SA_L(t_array, bucket_pointers, buckets_beginnings_ends,
+                suffix_array, input_string)
     #print_time("After Induce SA_L")
     #puts "SA & B(after induceSA_L): "
     #puts suffix_array.to_s
     #puts bucket_pointers.to_s
-
-    induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+    print "."
+    
+    induce_SA_S(t_array, bucket_pointers, buckets_beginnings_ends,
+                suffix_array, input_string)
     #print_time("After Induce SA_S")
     #puts "SA & B(after induceSA_S): "
     #puts suffix_array.to_s
     #puts bucket_pointers.to_s
-
+    print "."
+    
     #substring names S1
     unique_names, substring_names =
-      name_LMS_substring(lms_pointers, lms_pointers_hash,
-                          suffix_array, t_array, input_string)
-    
+      name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
+    print "."
     #print_time("After naming")
     #puts "Unique names of LMS substrings in S1: #{unique_names.to_s}"
     #puts "S1:"
     #puts substring_names.to_s
 
-    
+    print ".\n"
     if (unique_names)
       #puts "directly computing SA1 from SA1"
       suffix_array_short = directly_compute_shortened_SA(substring_names)
@@ -106,14 +110,15 @@ class SAIS
       suffix_array_short = main_sais(substring_names)
       #puts "returned from recursion"
     end
-    
+    print "."
     #print "SA1: "
     #puts suffix_array_short.to_s
     
 
     # Induce SA from SA1
-    induce_final_suffix_array(t_array, bucket_pointers, suffix_array, input_string,
-                          suffix_array_short, lms_pointers)
+    induce_final_suffix_array(t_array, bucket_pointers, buckets_beginnings_ends,
+                          suffix_array, input_string, suffix_array_short, lms_pointers)
+    print ".\n"
     
     #end_time = Time.now
     puts "-- SA_IS return --" + ">" * @recursion_level + "\n"
@@ -155,6 +160,11 @@ class SAIS
     }
     
     bucket_pointers = Hash.new(0)
+    
+    # For each bucket, set beggining and end pointer
+    # This saves some time for later resets of pointers
+    buckets_beginnings_ends = Hash.new()
+    
     total_count = 0
     
     chars_count.sort.map do |char, count|
@@ -162,10 +172,22 @@ class SAIS
       # This is initialization of bucket pointers
       # Set them to the end of each bucket (step 1)
       bucket_pointers[char] = (total_count - 1)
-
+      buckets_beginnings_ends[char] = {}
+      buckets_beginnings_ends[char]["B"] = total_count - count
+      buckets_beginnings_ends[char]["E"] = total_count - 1
     end
     
-    return t_array, bucket_pointers
+    return t_array, bucket_pointers, buckets_beginnings_ends
+  end
+  
+  
+  def reset_bucket_pointers(bucket_pointers, bucks_defaults, set_to_end)
+    # bucks_defaults = beginnings and ends of buckets
+    # set pointers to end or beginning for each bucket
+    bucket_pointers.keys.each do |key|
+      bucket_pointers[key] =
+        (set_to_end ? bucks_defaults[key]["E"] : bucks_defaults[key]["B"])
+    end
   end
   
   
@@ -220,36 +242,35 @@ class SAIS
                                        suffix_array, input_string)
     
     p_1 = []
-    p_1_hash = {}
-    hash_size = 0
-    t_array.each_with_index do |type, index|
-      if type == 1 && index > 0 && t_array[index - 1] == 0
-        p_1 << index
-        p_1_hash[index] = hash_size
-        hash_size += 1
+     
+    for idx in 1..(t_array.size - 1)
+      type = t_array[idx]
+      
+      if type == 1 && t_array[idx - 1] == 0
+        p_1 << idx
+
         # add LMS suffix index to SA in appropriate bucket
         # shift bucket pointer left
         # (1st step of induced sort algorithm I)
-        char_value = input_string[index]
+        char_value = input_string[idx]
         pointer = bucket_pointers[char_value]
         bucket_pointers[char_value] -= 1
-        suffix_array[pointer] = index
+        suffix_array[pointer] = idx
       end
-      
     end
-    return p_1, p_1_hash
+    
+    return p_1
+  
   end
   
   
-  def induce_SA_L(t_array, bucket_pointers,
+  def induce_SA_L(t_array, bucket_pointers, buckets_beginnings_ends, 
                   suffix_array, input_string)
     # (2nd step of induced sort algorithm )
+
     # set bucket pointers to the FIRST element of each bucket
-    #bucket_pointers = determine_buckets(input_string, false, bucket_pointers)
+    reset_bucket_pointers(bucket_pointers, buckets_beginnings_ends, false)
 
-    bucket_pointers = determine_buckets(input_string, false, bucket_pointers)
-
-    
     # foreach SA[i] > 0 check type
     suffix_array.each_with_index do |val, index|
       new_value = suffix_array[index]
@@ -271,12 +292,11 @@ class SAIS
   end
   
   
-  def induce_SA_S(t_array, bucket_pointers,
+  def induce_SA_S(t_array, bucket_pointers, buckets_beginnings_ends,
                   suffix_array, input_string)
     # (3rd step of induced sort algorithm)
     # set bucket pointers to the LAST element of each bucket
-    bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
-
+    reset_bucket_pointers(bucket_pointers, buckets_beginnings_ends, true)
 
     # foreach SA[i] > 0 check type
     # this time, check SA from the end to the beggining
@@ -302,22 +322,19 @@ class SAIS
   end
   
   
-  def name_LMS_substring(lms_pointers, lms_pointers_hash,
-                          suffix_array, t_array, input_string)
+  def name_LMS_substring(lms_pointers, suffix_array, t_array, input_string)
 
     # True only if each character in S_1 is unique
     each_char_unique = true
     
     # S_1
     substring_names = Array.new(lms_pointers.size)
-    
+    lms_pointers_hash = Hash[lms_pointers.map.with_index.to_a]
     names_count = 0
     previous_substring_index = -1
   
-
     n = suffix_array.size
 
-    
     substring_index = lms_pointers_hash[suffix_array[0]]
   
     unless substring_index.nil?
@@ -335,7 +352,6 @@ class SAIS
       #puts "i: #{idx}, val: #{value}, substring_idx: #{substring_index.to_s}"
       unless substring_index.nil?
         
-
         # Are current and previous LMS substrings equal?
         
         ##
@@ -389,25 +405,28 @@ class SAIS
   end
   
   
-  def induce_final_suffix_array(t_array, bucket_pointers, suffix_array,
-                   input_string, suffix_array_short, lms_pointers)
+  def induce_final_suffix_array(t_array, bucket_pointers, buckets_beginnings_ends,
+                      suffix_array, input_string, suffix_array_short, lms_pointers)
     #puts "Induce SA from SA1"
     suffix_array.map! {|x| x = -1}
 
-    bucket_pointers = determine_buckets(input_string, true, bucket_pointers)
+    # set bucket pointers to the LAST element of each bucket
+    reset_bucket_pointers(bucket_pointers, buckets_beginnings_ends, true)
 
-    suffix_array_short.to_enum.with_index.reverse_each do |value, index|
-      char_position = lms_pointers[suffix_array_short[index]]
+
+    (suffix_array_short.size-1).downto(0) {|idx|
+      char_position = lms_pointers[suffix_array_short[idx]]
 
       pointer = bucket_pointers[input_string[char_position]]
       bucket_pointers[input_string[char_position]] -= 1
-      suffix_array[pointer] = char_position
- 
-    end
-    
-    induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
+      suffix_array[pointer] = char_position  
+    }
 
-    induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
+    induce_SA_L(t_array, bucket_pointers, buckets_beginnings_ends,
+                suffix_array, input_string)
+  
+    induce_SA_S(t_array, bucket_pointers, buckets_beginnings_ends,
+                suffix_array, input_string)
 
     
   end
