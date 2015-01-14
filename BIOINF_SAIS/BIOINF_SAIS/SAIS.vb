@@ -1,151 +1,118 @@
-﻿Public Class SAIS
+﻿
+Imports Microsoft.VisualBasic.CompilerServices
 
-    Const MINBUCKETSIZE As Integer = 256
+Class SAIS
+
     Shared Sub Evaluate(S As Byte(), SA As Integer(), n As Integer)
 
-        'check if input string length is 1, return SA
-        If (n = 1) Then
-            SA(0) = 0
-            Return
-        End If
-
-        sais_main(New ByteArray(S, 0), SA, 0, n, MINBUCKETSIZE, False)
-
-        Return
-
-
-    End Sub
-
-    Private Shared Sub sais_main(ByVal S As ByteArray, ByVal sa As Integer(), ByVal fs As Integer, ByVal n As Integer, ByVal k As Integer, ByVal isbwt As Boolean)
-
-        Dim C, B, RA As IArray
-        Dim flags As Integer
-
-        If (k <= MINBUCKETSIZE) Then
-            C = New IntArray(New Integer(k) {}, 0)
-            If (k <= fs) Then
-                B = New IntArray(sa, n + fs - k)
-                flags = 1
+        'initialize t
+        Dim t(n - 1) As Boolean
+        t(n - 1) = True
+        For i As Integer = n - 2 To 0 Step -1
+            If (S(i) < S(i + 1) Or S(i).ToString() = "$") Then
+                t(i) = True
             Else
-                B = New IntArray(New Integer(k) {}, 0)
-                flags = 3
+                t(i) = False
             End If
+        Next
 
-        ElseIf (k <= fs) Then
+        'set P 
+        'k-1 is the pointer to the last 
+        Dim P_tmp(n - 1) As Integer
+
+        Dim k As Integer = 0
+        For j As Integer = n - 1 To 1 Step -1
+            If ((t(j) = True And t(j - 1) = False) Or S(j).ToString() = "$") Then
+                P_tmp(k) = j
+                k += 1
+            End If
+        Next
+        'reverse P and discard 0
+        Dim P1(k - 1) As Integer
+        For i As Integer = 0 To k - 1
+            P1(i) = P_tmp(k - 1)
+            k -= 1
+        Next
+
+        'count buckets 
+        Dim Counts As New SortedDictionary(Of Object, Integer)
+        For Each b As Byte In S
+            If (Counts.ContainsKey(b)) Then
+                Counts.Item(b) += 1
+            Else
+                Counts.Add(b, 1)
+            End If
+        Next
+
+        'initialize B and SA
+        Dim BucketPointers As New SortedDictionary(Of Byte, Integer)
+        'Dim SA_tmp As New Dictionary(Of Byte, Array)
+        For i As Integer = 0 To SA.Length-1
+            SA(i) = -1
+        Next
+        'set bucket pointers to ends
+        Dim previous As Integer = 0
+        For Each pair As KeyValuePair(Of Object, Integer) In Counts
+            BucketPointers(pair.Key) = previous + pair.Value - 1
+            previous += pair.Value
+        Next
+
+        'STEP1
+        'fill SA with indexes of LMS suffixes from beginning 
+        'pocetak podpolja BucketPointers(b) - Counts(b)
+        Dim index As Integer = 0
+        For Each b As Byte In S
+            If (P1.Contains(index)) Then
+                SA(BucketPointers(b)) = index
+                BucketPointers(b) -= 1
+            End If
+            index += 1
+        Next
+
+        'STEP2
+        'set bucket pointers to beginnings
+        previous = 0
+        For Each pair As KeyValuePair(Of Object,Integer) In Counts
+            BucketPointers(pair.Key) = previous
+            previous += pair.Value
+        Next
+
+        'iduce SAI
+        For i As Integer = 0 To SA.Length - 1
+            If (SA(i) > 0) Then
+                If (t(SA(i) - 1) = False) Then
+                    SA(BucketPointers(S(SA(i) - 1))) = SA(i) - 1
+                    BucketPointers(S(SA(i) - 1)) += 1
+                End If
+            End If
+        Next
+
+        'STEP 3
+        'set bucket pointers to ends
+        previous = 0
+        For Each pair As KeyValuePair(Of Object, Integer) In Counts
+            BucketPointers(pair.Key) = previous + pair.Value - 1
+            previous += pair.Value
+        Next
+
+        'induce SAs
+        For i As Integer = SA.Length - 1 To 0 Step -1
+            If (SA(i) > 0) Then
+                If (t(SA(i) - 1) = True) Then
+                    SA(BucketPointers(S(SA(i) - 1))) = SA(i) - 1
+                    BucketPointers(S(SA(i) - 1)) -= 1
+                End If
+            End If
+        Next
+
+        'name LMS substrings by it's buckets
+        Dim lmsName As Integer = 0
+        Dim S1(P1.Length) As Integer
+        For i As Integer = 0 To SA.Length - 1
+
+        Next
 
 
-        Else
 
-        End If
     End Sub
 End Class
-
-Friend Interface IArray
-    Default Property Item(i As Integer) As Integer
-
-End Interface
-
-Friend Class ByteArray
-    Implements IArray
-    Private m_array As Byte()
-    Private m_pos As Integer
-    Public Sub New(array As Byte(), pos As Integer)
-        m_pos = pos
-        m_array = array
-    End Sub
-    Protected Shadows Sub Finalize()
-        Try
-            m_array = Nothing
-        Finally
-            MyBase.Finalize()
-        End Try
-    End Sub
-    Default Public Property Item(i As Integer) As Integer Implements IArray.Item
-        Get
-            Return CInt(m_array(i + m_pos))
-        End Get
-        Set(value As Integer)
-            m_array(i + m_pos) = CByte(value)
-        End Set
-    End Property
-
-End Class
-
-Friend Class CharArray
-    Implements IArray
-    Private m_array As Char()
-    Private m_pos As Integer
-    Public Sub New(array As Char(), pos As Integer)
-        m_pos = pos
-        m_array = array
-    End Sub
-    Protected Shadows Sub Finalize()
-        Try
-            m_array = Nothing
-        Finally
-            MyBase.Finalize()
-        End Try
-    End Sub
-    Default Public Property Item(i As Integer) As Integer Implements IArray.Item
-        Get
-            Return AscW(m_array(i + m_pos))
-        End Get
-        Set(value As Integer)
-            m_array(i + m_pos) = ChrW(value)
-        End Set
-    End Property
-End Class
-
-Friend Class IntArray
-    Implements IArray
-    Private m_array As Integer()
-    Private m_pos As Integer
-    Public Sub New(array As Integer(), pos As Integer)
-        m_pos = pos
-        m_array = array
-    End Sub
-    Protected Overrides Sub Finalize()
-        Try
-            m_array = Nothing
-        Finally
-            MyBase.Finalize()
-        End Try
-    End Sub
-    Default Public Property Item(i As Integer) As Integer Implements IArray.Item
-        Get
-            Return m_array(i + m_pos)
-        End Get
-        Set(value As Integer)
-            m_array(i + m_pos) = value
-        End Set
-    End Property
-End Class
-
-Friend Class StringArray
-    Implements IArray
-    Private m_array As String
-    Private m_pos As Integer
-    Public Sub New(array As String, pos As Integer)
-        m_pos = pos
-        m_array = array
-    End Sub
-    Protected Overrides Sub Finalize()
-        Try
-            m_array = Nothing
-        Finally
-            MyBase.Finalize()
-        End Try
-    End Sub
-    Default Public Property Item(i As Integer) As Integer Implements IArray.Item
-        Get
-            Return AscW(m_array(i + m_pos))
-        End Get
-        Set(value As Integer)
-        End Set
-    End Property
-End Class
-
-
-
-
-

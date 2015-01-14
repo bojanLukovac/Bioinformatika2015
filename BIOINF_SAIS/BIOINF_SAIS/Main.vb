@@ -51,7 +51,6 @@
         Dim elapsedTime As Double = sw.ElapsedTicks / System.Diagnostics.Stopwatch.Frequency
         Console.WriteLine("Elapsed time: {0:f8}s", elapsedTime)
 
-        'check(T, SA, T.Length, true)
         S = Nothing
         SA = Nothing
 
