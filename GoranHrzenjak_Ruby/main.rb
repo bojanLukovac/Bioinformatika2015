@@ -7,6 +7,7 @@ require "parser"
 require "helpers"
 require "sais_methods"
 
+puts "\n"
 
 input_parser = Parser.new
 input_parser.parse_input_args
@@ -21,5 +22,9 @@ input_parser.get_input_strings.each do |input_string|
   
   sa_is = SAIS.new(input_string_ASCII)
   
+  start_time = Time.now
+  sa_is.calculate_suffix_array
+  end_time = Time.now
   
+  print_time_in_seconds("\nTime to calculate suffix array", (end_time - start_time))
 end

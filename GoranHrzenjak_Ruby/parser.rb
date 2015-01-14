@@ -47,7 +47,8 @@ class Parser
     if (ARGV.length > 2)
       @output_file_name = "output\\#{ARGV[2]}"
     else
-      @output_file_name = "output\\#{File.basename(@input_file_name, File.extname(@input_file_name))}_output.txt" 
+      @output_file_name =
+      "output\\#{File.basename(@input_file_name, File.extname(@input_file_name))}_output.txt" 
     end
     
     # check if there is the second argument - input file format flag
@@ -73,7 +74,6 @@ class Parser
       puts "Reading regular string"
       input_strings << input_data_file.gets
 
-      
     elsif @input_file_format == 1
       puts "Reading FASTA format"
       
@@ -93,8 +93,20 @@ class Parser
       puts "Unknown input file format: #{@input_file_format}"
       exit
     end
-
+    
+    input_data_file.close
+    
     return input_strings
+  end
+  
+  
+  def write_output(suffix_array)
+    File.open(@output_file_name, 'w') { |file| file.write("#{suffix_array}") }
+  end
+  
+  
+  def get_output_file_name
+    return @output_file_name
   end
   
 end
