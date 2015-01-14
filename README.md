@@ -2,6 +2,9 @@
 -----------
 Implementation of SA-IS suffix array construction algorithm in **Ruby**.
 
+Ruby required (version 1.9.3 or newer distributions)
+[Download](https://www.ruby-lang.org/en/downloads/)
+
 Usage
 -----------
 	$ cd GoranHrzenjak_Ruby
@@ -24,6 +27,7 @@ Input data
 -----------	
 Inside folder input_data there are are some input files for testing purposes
 e.g.
+
 | File          | Format          | Count      |
 | :------------ |-----------------| ----------:|
 | E_coli.fa     | FASTA           |  4 758 629 |
