@@ -16,10 +16,17 @@ Input arguments
   * **output file name** [optional]
 	* File inside *output* folder where output will be written in
 	* If no name is provided, output will be written in output/[input file name]_output.txt file
-	
 Examples
 -----------
     $ ruby main.rb input_data/test2.txt 0 test2_new.txt
 	$ ruby main.rb input_data/test1_fasta.fa 1
-	
-	
+Input data
+-----------	
+Inside folder input_data there are are some input files for testing purposes
+e.g.
+| File          | Format          | Count      |
+| :------------ |-----------------| ----------:|
+| E_coli.fa     | FASTA           |  4 758 629 |
+| test5.txt     | string          |     10 980 |
+| test10.txt    | string          |  1 002 840 |
+| bac2.txt      | FASTA           |  3 075 407 |

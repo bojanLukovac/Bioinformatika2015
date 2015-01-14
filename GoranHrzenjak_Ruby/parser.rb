@@ -78,8 +78,10 @@ class Parser
       puts "Reading regular string"
       data = ''
 
-      input_data_file.each_line do |line|
-        data += line
+      data = ''
+
+      input_data_file.readlines.each do |line|
+        data += line.strip
       end
       input_strings << data
 
