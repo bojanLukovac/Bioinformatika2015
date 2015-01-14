@@ -5,7 +5,7 @@ Imports Microsoft.VisualBasic.CompilerServices
 
 Class SAIS
 
-    Shared Sub Evaluate(S As Byte(), SA As Integer(), n As Integer)
+    Shared Sub Evaluate(S As Integer(), SA As Integer(), n As Integer)
 
         'initialize t
         Dim t(n - 1) As Boolean
@@ -40,7 +40,7 @@ Class SAIS
 
         'count buckets 
         Dim Counts As New SortedDictionary(Of Object, Integer)
-        For Each b As Byte In S
+        For Each b As Integer In S
             If (Counts.ContainsKey(b)) Then
                 Counts.Item(b) += 1
             Else
@@ -49,7 +49,7 @@ Class SAIS
         Next
 
         'initialize B and SA
-        Dim BucketPointers As New SortedDictionary(Of Byte, Integer)
+        Dim BucketPointers As New SortedDictionary(Of Integer, Integer)
         'Dim SA_tmp As New Dictionary(Of Byte, Array)
         For i As Integer = 0 To SA.Length - 1
             SA(i) = -1
@@ -65,7 +65,7 @@ Class SAIS
         'fill SA with indexes of LMS suffixes from beginning 
         'pocetak podpolja BucketPointers(b) - Counts(b)
         Dim index As Integer = 0
-        For Each b As Byte In S
+        For Each b As Integer In S
             If (P1.Contains(index)) Then
                 SA(BucketPointers(b)) = index
                 BucketPointers(b) -= 1
@@ -112,13 +112,13 @@ Class SAIS
         'name LMS substrings by it's buckets
         Dim lmsName As Integer = 0
         Dim lmsPrev As Integer
-        For i As Integer = 0 To SA.Length-1
+        For i As Integer = 0 To SA.Length - 1
             If (P1.Contains(SA(i))) Then
                 lmsPrev = SA(i)
                 Exit For
             End If
         Next
-        Dim S1(P1.Length - 1) As Byte
+        Dim S1(P1.Length - 1) As Integer
         Dim lmsCurr As Integer
         For i As Integer = 0 To n - 1
             If (P1.Contains(SA(i))) Then
@@ -160,7 +160,7 @@ Class SAIS
         'check if recursion is needed
         Dim SA1(S1.Length - 1) As Integer
         If (unique) Then
-            For i As Integer = 0 To S1.Length-1
+            For i As Integer = 0 To S1.Length - 1
                 SA1(S(i)) = i
             Next
         Else
