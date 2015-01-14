@@ -11,7 +11,7 @@
             Return
         End If
 
-        Dim filename As String = args(0)
+        Dim filename As String = "testovi/test1.txt"
 
         Dim fs As System.IO.FileStream = New IO.FileStream(filename, IO.FileMode.Open, IO.FileAccess.Read)
 

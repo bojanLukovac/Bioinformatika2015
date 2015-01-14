@@ -1,5 +1,6 @@
 ﻿
 Imports System.Diagnostics.Eventing.Reader
+Imports System.IO
 Imports Microsoft.VisualBasic.CompilerServices
 
 Class SAIS
@@ -110,7 +111,13 @@ Class SAIS
 
         'name LMS substrings by it's buckets
         Dim lmsName As Integer = 0
-        Dim lmsPrev As Integer = SA(0)
+        Dim lmsPrev As Integer
+        For i As Integer = 0 To SA.Length-1
+            If (P1.Contains(SA(i))) Then
+                lmsPrev = SA(i)
+                Exit For
+            End If
+        Next
         Dim S1(P1.Length - 1) As Byte
         Dim lmsCurr As Integer
         For i As Integer = 0 To n - 1
@@ -129,7 +136,7 @@ Class SAIS
                         lmsPrev += 1
                     End If
 
-                Loop While (t(SA(lmsCurr)) = False)
+                Loop While (P1.Contains(lmsCurr) Or P1.Contains(lmsPrev))
 
                 S1(Array.IndexOf(P1, SA(i))) = lmsName
                 lmsPrev = lmsCurr
