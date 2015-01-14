@@ -12,6 +12,8 @@ Class SAIS
         For i As Integer = n - 2 To 0 Step -1
             If (S(i) < S(i + 1) Or S(i).ToString() = "$") Then
                 t(i) = True
+            ElseIf (S(i) = S(i + 1)) Then
+                t(i) = t(i + 1)
             Else
                 t(i) = False
             End If
