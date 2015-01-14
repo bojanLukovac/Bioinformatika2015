@@ -167,11 +167,13 @@ public class SAIS {
 			//System.exit(0);
 		}
 		
-
+		int mb = 1024*1024;
 		long estimatedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Time Running: " + estimatedTime + " ms");
 		System.out.println("Time Running: " + estimatedTime / 1000.0 + " s");
 		
+		System.out.println("Used Memory:"
+	            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / mb + "MB");
 		
 	/*
 		System.out.println("PRINTING IT");

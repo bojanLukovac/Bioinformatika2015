@@ -1,0 +1,17 @@
+;; This buffer is for notes you don't want to save, and for Lisp evaluation.
+;; If you want to create a file, visit that file with C-x C-f,
+;; then enter the text in that file's own buffer.
+
+test1 0 MB
+test2 0 MB
+test3 1 MB
+test4 2 MB
+test5 5 MB
+test6 19 MB
+test7 29 MB
+test8 121 MB
+test9 176 MB
+test10 240 MB
+bac1 584 MB
+bac2 728 MB
+bac3 1263 MB
