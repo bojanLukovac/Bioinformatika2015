@@ -1,5 +1,13 @@
 package bioinformatika;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -8,10 +16,11 @@ import java.util.TreeMap;
 
 public class SAIS {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
 		ArrayList<SaisStep> saisSteps = new ArrayList<>();
-		String input = "aaaaaaaaaaaaaaaaaaa$";
+		
+		String input = readFile("/input_data/eserihija.txt", Charset.defaultCharset());
 		String copiedOriginal = input;
 		
 		// Do SA-IS steps until we reach array with all different names
@@ -249,5 +258,9 @@ public class SAIS {
 	
 	}
 	
+	static String readFile(String path, Charset encoding) throws IOException {
+		byte[] encoded = Files.readAllBytes(Paths.get(path));
+		return new String(encoded, encoding);
+	}
  	
 }
