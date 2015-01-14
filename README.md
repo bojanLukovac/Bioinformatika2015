@@ -1,4 +1,4 @@
-Bioinformatika2015
+#######Goran Hrzenjak
+########Ruby
 ==================
-
-Bioinformatika
+Implementation of SA-IS algorithm in Ruby
