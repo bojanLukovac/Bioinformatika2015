@@ -148,12 +148,29 @@ Class SAIS
             Next
         Next
 
+        'check if recursion is needed
         Dim SA1(S1.Length - 1) As Integer
         If (unique) Then
-
+            For i As Integer = 0 To S1.Length-1
+                SA1(S(i)) = i
+            Next
         Else
             SAIS.Evaluate(S1, SA1, S1.Length)
         End If
+
+        ''induce SA from SA1
+        'For i As Integer = 0 To SA.Length-1
+        '    SA(i) = -1
+        'Next
+        ''set bucket pointers to ends
+        'previous = 0
+        'For Each pair As KeyValuePair(Of Object, Integer) In Counts
+        '    BucketPointers(pair.Key) = previous + pair.Value - 1
+        '    previous += pair.Value
+        'Next
+        'For i As Integer = SA1.Length - 1 To 0
+        '    P1(SA1(i))
+        'Next
 
 
 

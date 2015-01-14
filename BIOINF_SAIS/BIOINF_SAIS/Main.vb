@@ -42,7 +42,7 @@
         sw.Stop()
 
         'write on output the final result - SA :
-        Console.WriteLine("SA=")
+        Console.Write("SA=")
         For Each i As Integer In SA
             Console.Write("{0} ", i)
         Next
