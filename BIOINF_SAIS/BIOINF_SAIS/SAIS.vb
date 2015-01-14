@@ -109,7 +109,7 @@ Class SAIS
         'name LMS substrings by it's buckets
         Dim lmsName As Integer = 0
         Dim lmsPrev As Integer = SA(0)
-        Dim S1(P1.Length - 1) As Integer
+        Dim S1(P1.Length - 1) As Byte
         Dim lmsCurr As Integer
         For i As Integer = 0 To n - 1
             If (P1.Contains(SA(i))) Then
@@ -133,6 +133,27 @@ Class SAIS
                 lmsPrev = lmsCurr
             End If
         Next
+
+        'check if elements in S1 are unique
+        Dim unique As Boolean = True
+        For Each element As Integer In S1
+            For i As Integer = 0 To S1.Length - 1
+                If (element = S1(i)) Then
+                    unique = False
+                    Exit For
+                End If
+                If (Not (unique)) Then
+                    Exit For
+                End If
+            Next
+        Next
+
+        Dim SA1(S1.Length - 1) As Integer
+        If (unique) Then
+
+        Else
+            SAIS.Evaluate(S1, SA1, S1.Length)
+        End If
 
 
 

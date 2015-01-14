@@ -41,8 +41,8 @@
         SAIS.Evaluate(S, SA, S.Length)
         sw.Stop()
 
-        'write on output the final result - SA 
-        Console.Write("SA= ")
+        'write on output the final result - SA :
+        Console.WriteLine("SA=")
         For Each i As Integer In SA
             Console.Write("{0} ", i)
         Next
