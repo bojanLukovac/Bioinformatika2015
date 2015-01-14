@@ -1,2 +1,0 @@
-###Goran Hrzenjak
-####Ruby
