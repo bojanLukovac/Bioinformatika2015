@@ -52,12 +52,12 @@ class SAIS
     n = input_string.size
     
     puts "-- SA_IS called --" + ">" * @recursion_level + "\n"
-    print_time("Start! Calculating for #{n} chars")
+    #print_time("Start! Calculating for #{n} chars")
     
     
     t_array, bucket_pointers =
       classify_types_determine_bucket_ptrs(input_string, n, true)
-    print_time("L-S types and buckets")
+    #print_time("L-S types and buckets")
     #puts t_array.to_s
     #puts bucket_pointers.to_s
     
@@ -68,7 +68,7 @@ class SAIS
     lms_pointers, lms_pointers_hash =
       determine_LMS_substring_pointers(t_array,
       bucket_pointers, suffix_array, input_string)
-    print_time("After 1st step")  
+    #print_time("After 1st step")  
     #print "P1: "
     #puts lms_pointers.to_s
     #puts "SA after 1st step: "
@@ -76,13 +76,13 @@ class SAIS
     #puts bucket_pointers.to_s
     
     induce_SA_L(t_array, bucket_pointers, suffix_array, input_string)
-    print_time("After Induce SA_L")
+    #print_time("After Induce SA_L")
     #puts "SA & B(after induceSA_L): "
     #puts suffix_array.to_s
     #puts bucket_pointers.to_s
 
     induce_SA_S(t_array, bucket_pointers, suffix_array, input_string)
-    print_time("After Induce SA_S")
+    #print_time("After Induce SA_S")
     #puts "SA & B(after induceSA_S): "
     #puts suffix_array.to_s
     #puts bucket_pointers.to_s
@@ -92,17 +92,17 @@ class SAIS
       name_LMS_substring(lms_pointers, lms_pointers_hash,
                           suffix_array, t_array, input_string)
     
-    print_time("After naming")
-    puts "Unique names of LMS substrings in S1: #{unique_names.to_s}"
-    puts "S1:"
-    puts substring_names.to_s
+    #print_time("After naming")
+    #puts "Unique names of LMS substrings in S1: #{unique_names.to_s}"
+    #puts "S1:"
+    #puts substring_names.to_s
 
     
     if (unique_names)
-      puts "directly computing SA1 from SA1"
+      #puts "directly computing SA1 from SA1"
       suffix_array_short = directly_compute_shortened_SA(substring_names)
     else
-      puts "recursion"
+      #puts "recursion"
       suffix_array_short = main_sais(substring_names)
       #puts "returned from recursion"
     end
@@ -110,9 +110,8 @@ class SAIS
     #print "SA1: "
     #puts suffix_array_short.to_s
     
-    #induce SA from SA1
-    #puts "inducing sa from sa1..."
 
+    # Induce SA from SA1
     induce_final_suffix_array(t_array, bucket_pointers, suffix_array, input_string,
                           suffix_array_short, lms_pointers)
     
@@ -138,7 +137,6 @@ class SAIS
   def classify_types_determine_bucket_ptrs(input_string, n, set_to_end)
     # array of L- or S-type characters
     # S-type : value 1, L-type : value 0
-    
     
     t_array = Array.new(n, -1)
     
@@ -213,14 +211,14 @@ class SAIS
 
     end
     
-    #puts bucket_pointers.to_s
-    
     return bucket_pointers
+  
   end
   
   
   def determine_LMS_substring_pointers(t_array, bucket_pointers,
                                        suffix_array, input_string)
+    
     p_1 = []
     p_1_hash = {}
     hash_size = 0
@@ -306,10 +304,7 @@ class SAIS
   
   def name_LMS_substring(lms_pointers, lms_pointers_hash,
                           suffix_array, t_array, input_string)
-    
-    
-    puts "Naming..."
-
+  
     # True only if each character in S_1 is unique
     each_char_unique = true
     

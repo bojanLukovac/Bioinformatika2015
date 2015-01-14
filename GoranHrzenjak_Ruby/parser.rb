@@ -102,6 +102,7 @@ class Parser
   
   def write_output(suffix_array)
     File.open(@output_file_name, 'w') { |file| file.write("#{suffix_array}") }
+    puts "Output writen to #{@output_file_name}"
   end
   
   

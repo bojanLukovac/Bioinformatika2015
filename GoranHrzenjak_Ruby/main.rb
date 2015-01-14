@@ -27,4 +27,12 @@ input_parser.get_input_strings.each do |input_string|
   end_time = Time.now
   
   print_time_in_seconds("\nTime to calculate suffix array", (end_time - start_time))
+  
+  string_out = sa_is.get_output_SA
+ 
+  for i in 0..14
+    #puts "#{string_out[i]}"
+  end
+  
+  input_parser.write_output(string_out)
 end
