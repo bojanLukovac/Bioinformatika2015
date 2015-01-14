@@ -14,10 +14,12 @@ Input arguments
     * 0 - regular string [DEFAULT]
 	* 1 - FASTA format
   * **output file name** [optional]
-	* File inside *output* folder where output will bi written in write in 
+	* File inside *output* folder where output will be written in
 	* If no name is provided, output will be written in output/[input file name]_output.txt file
 	
 Examples
 -----------
     $ ruby main.rb input_data/test2.txt 0 test2_new.txt
 	$ ruby main.rb input_data/test1_fasta.fa 1
+	
+	

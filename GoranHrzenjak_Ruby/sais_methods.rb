@@ -44,7 +44,7 @@ class SAIS
   # Algorithm steps are split into methods
   def main_sais(input_string)
     
-    start_time = Time.now
+    #start_time = Time.now
     
     @recursion_level += 1
 
@@ -52,12 +52,12 @@ class SAIS
     n = input_string.size
     
     puts "-- SA_IS called --" + ">" * @recursion_level + "\n"
-    #print_time("Start! Calculating for #{n} chars")
+    print_time("Start! Calculating for #{n} chars")
     
     
     t_array, bucket_pointers =
       classify_types_determine_bucket_ptrs(input_string, n, true)
-    #print_time("L-S types and buckets")
+    print_time("L-S types and buckets")
     #puts t_array.to_s
     #puts bucket_pointers.to_s
     
@@ -115,10 +115,10 @@ class SAIS
     induce_final_suffix_array(t_array, bucket_pointers, suffix_array, input_string,
                           suffix_array_short, lms_pointers)
     
-    end_time = Time.now
+    #end_time = Time.now
     puts "-- SA_IS return --" + ">" * @recursion_level + "\n"
-    print_time_in_seconds("Time for #{input_string.size} chars",
-      (end_time-start_time))
+    #print_time_in_seconds("Time for #{input_string.size} chars",
+    #  (end_time-start_time))
     
     @recursion_level -= 1
     
@@ -304,7 +304,7 @@ class SAIS
   
   def name_LMS_substring(lms_pointers, lms_pointers_hash,
                           suffix_array, t_array, input_string)
-  
+
     # True only if each character in S_1 is unique
     each_char_unique = true
     
@@ -313,27 +313,29 @@ class SAIS
     
     names_count = 0
     previous_substring_index = -1
-
-    ##lms_pointers_hash = Hash[lms_pointers.map.with_index.to_a]
-    ##lms_pointers_hash.keys.each {|k| puts "k#{k}: #{lms_pointers_hash[k]}"}
+  
 
     n = suffix_array.size
+
     
     substring_index = lms_pointers_hash[suffix_array[0]]
-
+  
     unless substring_index.nil?
       substring_names[substring_index] = names_count
       previous_substring_index = substring_index
+ 
     end
     
     for idx in (1..(n-1))
-
+      
       value = suffix_array[idx]
       ###substring_index = lms_pointers.index(value)
       substring_index = lms_pointers_hash[value]
 
       #puts "i: #{idx}, val: #{value}, substring_idx: #{substring_index.to_s}"
       unless substring_index.nil?
+        
+
         # Are current and previous LMS substrings equal?
         
         ##
@@ -372,6 +374,7 @@ class SAIS
     
       end
     end
+
     return each_char_unique, substring_names
   end
   

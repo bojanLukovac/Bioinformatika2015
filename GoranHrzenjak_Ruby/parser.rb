@@ -9,6 +9,10 @@ class Parser
     # 0 - regular string
     # 1 - FASTA format
     @input_file_format = 0
+    
+    # If reading FASTA format, there could be several inputs
+    # Write outputs to single file
+    @file_write_mod = 'w'
   end
   
   def print_values
@@ -101,8 +105,12 @@ class Parser
   
   
   def write_output(suffix_array)
-    File.open(@output_file_name, 'w') { |file| file.write("#{suffix_array}") }
+    File.open(@output_file_name, @file_write_mod) { |file| file.write("#{suffix_array}\n") }
     puts "Output writen to #{@output_file_name}"
+    if @input_file_format == 1
+      @file_write_mod = 'a'
+    end
+    
   end
   
   
