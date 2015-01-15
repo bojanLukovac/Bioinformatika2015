@@ -23,9 +23,14 @@ THE SOFTWARE.
 
 package bioinformatika;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -145,10 +150,23 @@ public class SAIS {
 	 	    }
 	 		
 	 		if (i == 0) {
-		 		System.out.println("lastSA: ");
-		 		for (int j = 0; j < lastSA.size() && j < 15; j++) {
-					System.out.println(lastSA.get(j));
+	 			// We're done, show times and memory usage and write solution to file
+	 			
+	 			int mb = 1024*1024;
+	 			long estimatedTime = System.currentTimeMillis() - startTime;
+	 			System.out.println("Time Running: " + estimatedTime + " ms");
+	 			System.out.println("Time Running: " + estimatedTime / 1000.0 + " s");
+	 			
+	 			System.out.println("Used Memory:"
+	 		            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / mb + "MB");
+	 			
+		 		System.out.println("lastSA is printed to file: " + args[1]);
+		 		
+		 		BufferedWriter out = new BufferedWriter(new FileWriter(new File(args[1])));
+		 		for (int j = 0; j < lastSA.size(); j++) {
+					out.write(lastSA.get(j) + " ");
 				}
+		 		out.close();
 	 		}
 	 		/*
 	 		System.out.println("BUKETPOJNTER");
@@ -167,13 +185,6 @@ public class SAIS {
 			//System.exit(0);
 		}
 		
-		int mb = 1024*1024;
-		long estimatedTime = System.currentTimeMillis() - startTime;
-		System.out.println("Time Running: " + estimatedTime + " ms");
-		System.out.println("Time Running: " + estimatedTime / 1000.0 + " s");
-		
-		System.out.println("Used Memory:"
-	            + (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / mb + "MB");
 		
 	/*
 		System.out.println("PRINTING IT");
