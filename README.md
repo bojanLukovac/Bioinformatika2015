@@ -27,9 +27,8 @@ THE SOFTWARE.
 
 Instructions
 ============
-javac /src/bioinformatika/*.java
-java SAIS <input file> <output file>
+./compile_and_run <input file> <output file>
 
 Example
 ============
-java SAIS /home/input.txt /home/output.txt
+./compile_and_run /home/input.txt /home/output.txt
