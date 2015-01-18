@@ -1,3 +1,3 @@
 javac src/bioinformatika/*.java
-
-java -Xmx2048m
+cd src
+java -Xmx2048m bioinformatika/SAIS $1 $2
