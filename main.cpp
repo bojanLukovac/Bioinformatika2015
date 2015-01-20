@@ -1,6 +1,7 @@
 #include <iostream>
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 using namespace std;
 #include <time.h>
 
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
 	fseek(stdin, 0, SEEK_SET );
 	fread((unsigned char *) s_ch, 1, n-1, stdin);
 	
-	*s_ch[n-1] = '$'; //set non alphabetical character
+	s_ch[n-1] = 0; //set non alphabetical character
 	
 	start = clock();
 
@@ -58,7 +59,7 @@ int main(int argc, char **argv) {
 
     	fprintf(stderr, "\nOutputing the suffix array");
 	for(int i=1; i<n; i++)
-		fwrite((unsigned char *)SA+i, sizeof(int), 1, stdout);
+		fprintf(stdout,"%d ",SA[i]);
 	
 	fprintf(stderr, "\nComputing of the suffix array finished");
 	fprintf(stderr, "\nString size: %d characters, Time: %5.3f seconds\n", n-1, duration);
