@@ -13,3 +13,10 @@ end
 def print_time_in_seconds(msg, time)
   printf "%s : %5.3f s\n", msg, time
 end
+
+def report_memory
+  mem = `ps ax -o pid,rss | grep -E "^[[:space:]]*#{$$}"`
+          .strip.split.map(&:to_i)[1]
+  puts "Memory #{mem} KB"
+  return mem
+end
